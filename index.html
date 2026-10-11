@@ -109,7 +109,6 @@
     cursor: pointer;
   }
 
-  /* HAMBURGER */
   .hamburger {
     display: none;
     background: transparent;
@@ -363,7 +362,6 @@
     color: #555;
   }
 
-  /* RTL */
   html[dir="rtl"] .mobile-menu {
     right: auto;
     left: -320px;
@@ -475,7 +473,6 @@
       </div>
     </section>
 
-    <!-- DESKTOP SIDEBAR -->
     <aside class="sidebar">
       <h3 id="sidebarTitle">Pôles CMC</h3>
       <div id="sidebarPoles"></div>
@@ -736,50 +733,74 @@ function buildMenus() {
   mobile.innerHTML = "";
 
   poles.forEach(pole => {
-    const poleHTML = `
+    const desktopHTML = `
       <div class="pole-item">
-        <button class="pole-button" onclick="togglePole('${pole.id}')">
+        <button class="pole-button" onclick="togglePole('desktop', '${pole.id}')">
           ${pole[currentLanguage]}
         </button>
 
-        <div class="pole-content" id="content-${pole.id}">
-          <button class="year-btn" onclick="toggleBranches('${pole.id}', 1)">
+        <div class="pole-content" id="desktop-content-${pole.id}">
+          <button class="year-btn" onclick="toggleBranches('desktop', '${pole.id}', 1)">
             ${t.year1}
           </button>
 
-          <button class="year-btn" onclick="toggleBranches('${pole.id}', 2)">
+          <button class="year-btn" onclick="toggleBranches('desktop', '${pole.id}', 2)">
             ${t.year2}
           </button>
 
-          <div class="branch-list" id="branches-${pole.id}-1"></div>
-          <div class="branch-list" id="branches-${pole.id}-2"></div>
+          <div class="branch-list" id="desktop-branches-${pole.id}-1"></div>
+          <div class="branch-list" id="desktop-branches-${pole.id}-2"></div>
         </div>
       </div>
     `;
 
-    desktop.innerHTML += poleHTML;
-    mobile.innerHTML += poleHTML;
+    const mobileHTML = `
+      <div class="pole-item">
+        <button class="pole-button" onclick="togglePole('mobile', '${pole.id}')">
+          ${pole[currentLanguage]}
+        </button>
+
+        <div class="pole-content" id="mobile-content-${pole.id}">
+          <button class="year-btn" onclick="toggleBranches('mobile', '${pole.id}', 1)">
+            ${t.year1}
+          </button>
+
+          <button class="year-btn" onclick="toggleBranches('mobile', '${pole.id}', 2)">
+            ${t.year2}
+          </button>
+
+          <div class="branch-list" id="mobile-branches-${pole.id}-1"></div>
+          <div class="branch-list" id="mobile-branches-${pole.id}-2"></div>
+        </div>
+      </div>
+    `;
+
+    desktop.innerHTML += desktopHTML;
+    mobile.innerHTML += mobileHTML;
   });
 }
 
-function togglePole(poleId) {
+function togglePole(menu, poleId) {
   const contents = document.querySelectorAll(".pole-content");
 
   contents.forEach(content => {
-    if (content.id === "content-" + poleId) {
+    if (content.id === menu + "-content-" + poleId) {
       content.style.display = content.style.display === "block" ? "none" : "block";
-    } else {
+    } else if (content.id.startsWith(menu + "-")) {
       content.style.display = "none";
     }
   });
 }
 
-function toggleBranches(poleId, year) {
+function toggleBranches(menu, poleId, year) {
   const pole = poles.find(p => p.id === poleId);
-  const list = document.getElementById("branches-" + poleId + "-" + year);
+  const list = document.getElementById(menu + "-branches-" + poleId + "-" + year);
 
   document.querySelectorAll(".branch-list").forEach(item => {
-    if (item.id !== "branches-" + poleId + "-" + year) {
+    if (
+      item.id.startsWith(menu + "-") &&
+      item.id !== menu + "-branches-" + poleId + "-" + year
+    ) {
       item.style.display = "none";
       item.innerHTML = "";
     }
