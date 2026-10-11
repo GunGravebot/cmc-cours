@@ -85,7 +85,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
     gap: 10px;
   }
 
@@ -110,6 +109,18 @@
     cursor: pointer;
   }
 
+  /* HAMBURGER */
+  .hamburger {
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  /* LAYOUT */
   .layout {
     display: grid;
     grid-template-columns: 1fr 320px;
@@ -305,22 +316,88 @@
     transform: translateY(-4px);
   }
 
+  /* MOBILE MENU */
+  .menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 90;
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    max-width: 85%;
+    height: 100%;
+    background: white;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 100;
+    transition: right .3s ease;
+    box-shadow: -10px 0 30px rgba(0,0,0,.2);
+  }
+
+  .mobile-menu.open {
+    right: 0;
+  }
+
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .mobile-menu-header h3 {
+    color: #0b3d91;
+  }
+
+  .close-menu {
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: #555;
+  }
+
   /* RTL */
-  html[dir="rtl"] .layout {
-    grid-template-columns: 320px 1fr;
+  html[dir="rtl"] .mobile-menu {
+    right: auto;
+    left: -320px;
   }
 
-  html[dir="rtl"] .sidebar {
-    order: -1;
+  html[dir="rtl"] .mobile-menu.open {
+    left: 0;
   }
 
-  @media (max-width: 800px) {
+  /* MOBILE */
+  @media (max-width: 900px) {
     .layout {
       grid-template-columns: 1fr;
+      padding: 15px;
+    }
+
+    .sidebar {
+      display: none;
+    }
+
+    .hamburger {
+      display: block;
     }
 
     .small-screens {
       grid-template-columns: 1fr;
+    }
+
+    .big-screen {
+      padding: 30px 20px;
+    }
+
+    .big-screen h2 {
+      font-size: 24px;
     }
   }
 </style>
@@ -360,6 +437,8 @@
         <option value="en">English</option>
       </select>
 
+      <button class="hamburger" onclick="openMenu()">☰</button>
+
       <button class="logout-btn" onclick="logout()" id="logoutBtn">Déconnexion</button>
     </div>
   </header>
@@ -396,6 +475,7 @@
       </div>
     </section>
 
+    <!-- DESKTOP SIDEBAR -->
     <aside class="sidebar">
       <h3 id="sidebarTitle">Pôles CMC</h3>
       <div id="sidebarPoles"></div>
@@ -412,6 +492,18 @@
 
   <div class="modules-grid" id="modulesGrid"></div>
 </main>
+
+<!-- MOBILE MENU -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+<aside class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <h3 id="mobileMenuTitle">Pôles CMC</h3>
+    <button class="close-menu" onclick="closeMenu()">×</button>
+  </div>
+
+  <div id="mobilePoles"></div>
+</aside>
 
 <script>
 const translations = {
@@ -608,7 +700,6 @@ const poles = [
 ];
 
 let currentLanguage = "fr";
-let currentBranch = null;
 
 function applyLanguage(lang) {
   currentLanguage = lang;
@@ -624,6 +715,7 @@ function applyLanguage(lang) {
   document.getElementById("siteTitle").textContent = t.loginTitle;
   document.getElementById("logoutBtn").textContent = t.logout;
   document.getElementById("sidebarTitle").textContent = t.sidebarPoles;
+  document.getElementById("mobileMenuTitle").textContent = t.sidebarPoles;
   document.getElementById("modulesTitle").textContent = t.modules;
   document.getElementById("modulesBackBtn").textContent = t.back;
 
@@ -631,51 +723,55 @@ function applyLanguage(lang) {
     button.textContent = t.edit;
   });
 
-  buildSidebar();
+  buildMenus();
 }
 
-function buildSidebar() {
+function buildMenus() {
   const t = translations[currentLanguage];
-  const container = document.getElementById("sidebarPoles");
-  container.innerHTML = "";
+
+  const desktop = document.getElementById("sidebarPoles");
+  const mobile = document.getElementById("mobilePoles");
+
+  desktop.innerHTML = "";
+  mobile.innerHTML = "";
 
   poles.forEach(pole => {
-    const poleItem = document.createElement("div");
-    poleItem.className = "pole-item";
-
-    poleItem.innerHTML = `
-      <button class="pole-button" onclick="togglePole('${pole.id}')">
-        ${pole[currentLanguage]}
-      </button>
-
-      <div class="pole-content" id="content-${pole.id}">
-        <button class="year-btn" onclick="toggleBranches('${pole.id}', 1)">
-          ${t.year1}
+    const poleHTML = `
+      <div class="pole-item">
+        <button class="pole-button" onclick="togglePole('${pole.id}')">
+          ${pole[currentLanguage]}
         </button>
 
-        <button class="year-btn" onclick="toggleBranches('${pole.id}', 2)">
-          ${t.year2}
-        </button>
+        <div class="pole-content" id="content-${pole.id}">
+          <button class="year-btn" onclick="toggleBranches('${pole.id}', 1)">
+            ${t.year1}
+          </button>
 
-        <div class="branch-list" id="branches-${pole.id}-1"></div>
-        <div class="branch-list" id="branches-${pole.id}-2"></div>
+          <button class="year-btn" onclick="toggleBranches('${pole.id}', 2)">
+            ${t.year2}
+          </button>
+
+          <div class="branch-list" id="branches-${pole.id}-1"></div>
+          <div class="branch-list" id="branches-${pole.id}-2"></div>
+        </div>
       </div>
     `;
 
-    container.appendChild(poleItem);
+    desktop.innerHTML += poleHTML;
+    mobile.innerHTML += poleHTML;
   });
 }
 
 function togglePole(poleId) {
-  const content = document.getElementById("content-" + poleId);
+  const contents = document.querySelectorAll(".pole-content");
 
-  document.querySelectorAll(".pole-content").forEach(item => {
-    if (item.id !== "content-" + poleId) {
-      item.style.display = "none";
+  contents.forEach(content => {
+    if (content.id === "content-" + poleId) {
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    } else {
+      content.style.display = "none";
     }
   });
-
-  content.style.display = content.style.display === "block" ? "none" : "block";
 }
 
 function toggleBranches(poleId, year) {
@@ -697,12 +793,13 @@ function toggleBranches(poleId, year) {
 
   list.innerHTML = "";
 
-  pole.branches[year].forEach((branch, index) => {
+  pole.branches[year].forEach(branch => {
     const button = document.createElement("button");
     button.className = "branch-btn";
     button.textContent = branch.name[currentLanguage];
     button.onclick = function () {
-      openModulesPage(pole, year, branch);
+      closeMenu();
+      openModulesPage(branch);
     };
 
     list.appendChild(button);
@@ -711,9 +808,7 @@ function toggleBranches(poleId, year) {
   list.style.display = "block";
 }
 
-function openModulesPage(pole, year, branch) {
-  currentBranch = branch;
-
+function openModulesPage(branch) {
   document.getElementById("modulesTitle").textContent =
     branch.name[currentLanguage] + " - " + translations[currentLanguage].modules;
 
@@ -745,6 +840,16 @@ function showPage(pageId) {
 
 function goHome() {
   showPage("homePage");
+}
+
+function openMenu() {
+  document.getElementById("mobileMenu").classList.add("open");
+  document.getElementById("menuOverlay").style.display = "block";
+}
+
+function closeMenu() {
+  document.getElementById("mobileMenu").classList.remove("open");
+  document.getElementById("menuOverlay").style.display = "none";
 }
 
 function login() {
