@@ -2,1073 +2,2811 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMC Tanger - Plateforme Étudiante</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CMC Courses — Espace de formation</title>
+
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
+:root {
+  --blue: #234e97;
+  --dark: #192b57;
+  --text: #23334c;
+  --muted: #708097;
+  --line: #dce4f2;
+  --bg: #f0f3fa;
+  --shadow: 0 10px 28px rgba(25,50,95,.08);
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at top left, #e0e7f7, transparent 55%),
+    var(--bg);
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+a { color: var(--blue); }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #7da7ec;
+  outline-offset: 3px;
+}
+
+button:disabled { opacity: .55; cursor: wait; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  color: var(--text);
+}
+
+textarea { min-height: 110px; resize: vertical; }
+
+label {
+  display: block;
+  margin: 14px 0 7px;
+  font-size: 14px;
+}
+
+.primary, .secondary, .danger {
+  border: 0;
+  border-radius: 10px;
+  padding: 11px 16px;
+}
+
+.primary { background: var(--blue); color: white; }
+.secondary { background: #dfe8f8; color: var(--blue); }
+.danger { background: #fce5e8; color: #ae243a; }
+.small { font-size: 12px; }
+.muted { color: var(--muted); line-height: 1.65; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+/* ROLE SELECTION */
+
+.entry-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at 15% 15%, #384b82, transparent 45%),
+    linear-gradient(130deg, #172243, #253c70);
+}
+
+.entry-wrap { width: min(100%, 1000px); }
+.entry-heading { color: white; text-align: center; margin-bottom: 30px; }
+.entry-heading h1 { font-size: 38px; margin: 10px 0; }
+.entry-heading p { opacity: .8; }
+
+.entry-language {
+  display: block;
+  width: 150px;
+  margin: 0 auto 20px;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.role-card {
+  overflow: hidden;
+  padding: 0;
+  text-align: start;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 24px;
+  background: white;
+  color: var(--text);
+  box-shadow: 0 20px 50px rgba(0,0,0,.18);
+  transition: transform .2s;
+}
+
+.role-card:hover { transform: translateY(-5px); }
+
+.role-art {
+  width: 100%;
+  height: 220px;
+  display: block;
+  background: linear-gradient(135deg, #e8efff, #b9d2ff);
+}
+
+.role-card.teacher .role-art {
+  background: linear-gradient(135deg, #efeaff, #c9c0ef);
+}
+
+.role-copy { padding: 25px; }
+.role-copy h2 { margin: 0 0 10px; font-size: 25px; }
+.role-copy p { margin: 0 0 18px; color: var(--muted); line-height: 1.6; }
+.role-go { display: inline-block; color: var(--blue); font-weight: 650; }
+
+.entry-note {
+  text-align: center;
+  color: #c6d2ec;
+  font-size: 12px;
+  margin-top: 24px;
+  line-height: 1.7;
+}
+
+/* LOGIN */
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: linear-gradient(130deg, #172243, #253c70);
+}
+
+.login-box {
+  width: min(100%, 440px);
+  padding: 32px;
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 20px 60px #0003;
+}
+
+.login-brand {
+  margin: 22px 0 0;
+  color: var(--blue);
+  font-size: 26px;
+  font-weight: 750;
+}
+
+.login-box h1 { margin: 14px 0 8px; font-size: 23px; color: var(--text); }
+.login-box .primary { width: 100%; margin-top: 22px; }
+
+.role-badge {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 6px 11px;
+  border-radius: 20px;
+  background: #e8eefb;
+  color: var(--blue);
+  font-size: 12px;
+}
+
+/* HEADER */
+
+#app {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.site-header {
+  flex-shrink: 0;
+  background: var(--dark);
+  color: white;
+  z-index: 40;
+}
+
+.header-inner {
+  max-width: 1700px;
+  margin: auto;
+  padding: 13px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  direction: ltr;
+}
+
+.brand {
+  background: none;
+  border: 0;
+  color: white;
+  text-align: start;
+  padding: 0;
+}
+
+.brand-title { display: block; font-size: 22px; font-weight: 750; }
+.brand-subtitle { font-size: 11px; opacity: .75; }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  direction: ltr;
+}
+
+.header-controls select { width: 112px; padding: 9px; border: 0; }
+
+.account-wrap { position: relative; }
+
+.account-button {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 2px solid #ffffff80;
+  border-radius: 50%;
+  overflow: hidden;
+  color: white;
+  background: #4f6aa1;
+}
+
+.account-button .avatar {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  box-shadow: none;
+}
+
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: 54px;
+  width: min(320px, 88vw);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #f9fbff;
+  color: var(--text);
+  box-shadow: 0 20px 45px #10234438;
+  direction: ltr;
+}
+
+html[dir="rtl"] .account-menu { direction: rtl; }
+
+.account-summary {
+  text-align: center;
+  padding: 4px 0 15px;
+  overflow-wrap: anywhere;
+}
+
+.account-summary .avatar { width: 65px; height: 65px; }
+.account-summary h3 { margin: 8px 0 5px; }
+.account-summary p { margin: 4px 0; font-size: 12px; color: var(--muted); }
+
+.menu-item {
+  width: 100%;
+  display: block;
+  text-align: start;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+}
+
+.menu-item:hover { background: #e5edfb; }
+.menu-item.logout { color: #b12840; }
+
+.hamburger {
+  display: none;
+  width: 43px;
+  height: 43px;
+  border: 0;
+  border-radius: 9px;
+  background: #ffffff18;
+  color: white;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1700px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 170px minmax(0,1fr) 305px;
+  gap: 22px;
+  padding: 22px;
+  direction: ltr;
+}
+
+/* Channel view: remove the left column completely. */
+.dashboard.channel-layout {
+  grid-template-columns: minmax(0,1fr) 305px;
+}
+
+.dashboard > * {
+  min-height: 0;
+  min-width: 0;
+  direction: ltr;
+}
+
+html[dir="rtl"] .dashboard > * { direction: rtl; }
+
+.people-panel, .workspace, .poles-panel {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #b5c4dd transparent;
+}
+
+.people-panel, .poles-panel { padding: 10px 5px 24px; }
+
+.panel-heading {
+  margin: 0 0 20px;
+  color: var(--blue);
+  font-size: 15px;
+}
+
+.people-panel .panel-heading { text-align: center; }
+
+.people-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 4px;
+}
+
+.person-card {
+  width: 100%;
+  padding: 8px 4px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  color: inherit;
+  text-align: center;
+}
+
+button.person-card:hover { background: #ffffff80; }
+.person-card.active { background: #dce7fa; border-color: #bfd1ef; }
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 11px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #dce5f5, #bdcce6);
+  box-shadow: 0 6px 18px #1e37641f;
+  flex-shrink: 0;
+}
+
+.avatar svg { width: 56%; height: 56%; fill: #8195b5; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.person-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  margin-bottom: 5px;
+  overflow-wrap: anywhere;
+}
+
+.person-role {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.workspace {
+  padding: 2px 5px 25px;
+  scroll-margin-top: 95px;
+}
+
+/* ANNOUNCEMENTS */
+
+.hero {
+  min-height: 340px;
+  padding: 34px;
+  border-radius: 22px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  background:
+    radial-gradient(circle at 90% 10%, #6177b4, transparent 45%),
+    linear-gradient(135deg, #29274e, #144d90);
+  box-shadow: var(--shadow);
+}
+
+.hero h2 { font-size: clamp(25px,3vw,39px); margin: 18px 0 12px; }
+.hero p { line-height: 1.8; margin: 0; }
+
+.tag {
+  padding: 6px 11px;
+  border-radius: 20px;
+  background: #ffffff22;
+  font-size: 12px;
+}
+
+.announcement-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.announcement-card {
+  padding: 24px;
+  background: #ffffffc9;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.announcement-card h3 { margin: 0 0 12px; color: var(--blue); }
+.announcement-card p { margin: 0; color: var(--muted); line-height: 1.7; }
+
+/* BIGGER POLE BUTTONS */
+
+.poles-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.poles-heading h2 { margin: 0; font-size: 17px; }
+.pole-item + .pole-item { margin-top: 14px; }
+
+.pole-button {
+  width: 100%;
+  min-height: 84px;
+  padding: 19px 16px;
+  border: 0;
+  border-radius: 16px;
+  color: var(--blue);
+  background: #e0e7f4;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.pole-button:hover { background: #d7e3f6; }
+.pole-button[aria-expanded="true"] { background: #d0dff6; }
+
+.pole-symbol {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+  background: #ffffff70;
+  font-size: 23px;
+}
+
+.pole-label { flex: 1; }
+.pole-arrow { flex-shrink: 0; font-size: 20px; }
+
+.pole-content { padding: 10px 3px 2px; }
+.year-group + .year-group { margin-top: 8px; }
+
+.year-button {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  color: var(--blue);
+  background: #e4ebf8;
+  text-align: start;
+  font-size: 14px;
+}
+
+.year-button[aria-expanded="true"] { background: #c7d9f4; }
+
+.branch-list {
+  display: grid;
+  gap: 7px;
+  padding: 8px 0;
+  padding-inline-start: 9px;
+}
+
+.branch-button {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d5dfef;
+  border-radius: 9px;
+  color: var(--text);
+  background: #ffffff80;
+  text-align: start;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.branch-button.selected { background: var(--blue); color: white; }
+
+.close-menu {
+  display: none;
+  border: 0;
+  background: #e1e9f7;
+  border-radius: 9px;
+  width: 40px;
+  height: 40px;
+  font-size: 25px;
+}
+
+/* MODULES AND CHANNELS */
+
+.view-heading { margin: 20px 0 9px; color: var(--blue); line-height: 1.4; }
+
+.breadcrumb {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.modules-grid, .resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(175px,1fr));
+  gap: 15px;
+}
+
+.module-card {
+  min-height: 140px;
+  padding: 23px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #ffffffcc;
+  color: var(--blue);
+  box-shadow: var(--shadow);
+  line-height: 1.6;
+}
+
+.module-card:hover { background: #e5efff; }
+.module-icon { display: block; font-size: 27px; margin-bottom: 12px; }
+
+.channel-banner {
+  height: 180px;
+  margin-top: 16px;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 80% 20%, #6a83bd, transparent 40%),
+    linear-gradient(120deg, #25294e, #225399);
+}
+
+.channel-banner img { width: 100%; height: 100%; object-fit: cover; }
+
+.channel-info {
+  display: flex;
+  gap: 22px;
+  padding: 26px 4px;
+  align-items: flex-start;
+}
+
+.channel-avatar { width: 120px; height: 120px; margin: 0; }
+.channel-details { flex: 1; min-width: 0; }
+.channel-details h2 { margin: 0 0 8px; color: var(--blue); font-size: 28px; }
+.channel-details .muted { margin: 8px 0; font-size: 14px; }
+
+.channel-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 13px;
+  margin: 13px 0;
+}
+
+.bio { white-space: pre-line; }
+
+.follow-button {
+  border: 0;
+  border-radius: 24px;
+  padding: 10px 20px;
+  background: var(--blue);
+  color: white;
+}
+
+.follow-button.following { background: #dbe6f8; color: var(--blue); }
+
+.channel-tabs {
+  display: flex;
+  border-bottom: 1px solid #cfdaeb;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.channel-tab {
+  flex: 1;
+  padding: 14px 8px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.channel-tab[aria-selected="true"] {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.resource-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #ffffffc9;
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+.resource-card h3 { font-size: 15px; line-height: 1.5; margin: 12px 0 9px; }
+.resource-card a { display: block; text-decoration: none; }
+.resource-card .actions { margin-top: 14px; }
+.resource-card button { padding: 7px 10px; font-size: 12px; }
+.resource-icon { font-size: 28px; }
+
+.empty-state {
+  padding: 32px 20px;
+  border: 1px dashed #bacbe4;
+  border-radius: 15px;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.owner-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0 0 18px;
+  padding: 15px;
+  border-radius: 13px;
+  background: #dfe9fb;
+}
+
+/* DIALOGS */
+
+dialog {
+  width: min(580px,94vw);
+  max-height: 90vh;
+  border: 0;
+  border-radius: 20px;
+  padding: 25px;
+  background: #f9fbff;
+  color: var(--text);
+  box-shadow: 0 25px 80px #0004;
+}
+
+dialog::backdrop { background: #0e1e3e99; }
+dialog h2 { margin: 0 0 10px; color: var(--blue); }
+
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.dialog-close {
+  border: 0;
+  background: #e5edfb;
+  border-radius: 8px;
+  width: 35px;
+  height: 35px;
+  font-size: 23px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+dialog select[multiple] { min-height: 150px; }
+.dialog-note { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+.status {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  max-width: 90vw;
+  padding: 13px 20px;
+  border-radius: 12px;
+  background: #172e56;
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #0c162d80;
+}
+
+body.menu-open { overflow: hidden; }
+
+/* RESPONSIVE */
+
+@media (min-width:901px) and (max-width:1150px) {
+  .dashboard {
+    grid-template-columns: 140px minmax(0,1fr) 270px;
+    gap: 14px;
+    padding: 17px;
   }
 
-  body {
-    background: #f4f6fb;
-    color: #222;
+  .dashboard.channel-layout {
+    grid-template-columns: minmax(0,1fr) 270px;
   }
 
-  /* LOGIN */
-  .login-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #0b3d91, #1e88e5);
+  .avatar { width: 76px; height: 76px; }
+  .channel-avatar { width: 110px; height: 110px; }
+  .pole-button { font-size: 15px; }
+}
+
+@media (max-width:900px) {
+  #app { height: auto; min-height: 100vh; overflow: visible; }
+  .site-header { position: sticky; top: 0; }
+  .header-inner { padding: 12px 15px; }
+  .brand-title { font-size: 19px; }
+  .brand-subtitle { display: none; }
+  .hamburger { display: block; }
+
+  .dashboard,
+  .dashboard.channel-layout {
+    grid-template-columns: minmax(0,1fr);
+    padding: 15px;
+    gap: 16px;
   }
 
-  .login-box {
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  .people-panel { height: auto; overflow: visible; padding: 5px 0; }
+  .people-panel .panel-heading { text-align: start; margin-bottom: 10px; }
+
+  .people-list {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 4px 4px 14px;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
   }
 
-  .login-box h1 {
-    text-align: center;
-    color: #0b3d91;
-    margin-bottom: 8px;
-  }
+  .person-card { flex: 0 0 125px; scroll-snap-align: start; }
+  .avatar { width: 74px; height: 74px; }
+  .workspace { height: auto; overflow: visible; padding: 0 0 20px; }
+  .hero { min-height: 280px; padding: 26px; }
 
-  .login-box p {
-    text-align: center;
-    color: #666;
-    margin-bottom: 25px;
-  }
-
-  input, select {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-
-  .btn {
-    width: 100%;
-    padding: 12px;
-    background: #0b3d91;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-
-  .error {
-    color: #d32f2f;
-    text-align: center;
-    margin-bottom: 10px;
-    display: none;
-  }
-
-  /* PAGES */
-  .page {
-    display: none;
-  }
-
-  header {
-    background: #0b3d91;
-    color: white;
-    padding: 15px 25px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .header-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .language-select {
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-  }
-
-  .logout-btn {
-    background: #e53935;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .hamburger {
-    display: none;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-    line-height: 1;
-  }
-
-  /* LAYOUT */
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 20px;
-    padding: 25px;
-  }
-
-  /* BIG SCREEN */
-  .big-screen {
-    background: linear-gradient(135deg, #0b3d91, #1e88e5);
-    color: white;
-    border-radius: 16px;
-    padding: 45px 30px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .big-screen h2 {
-    font-size: 30px;
-    margin-bottom: 12px;
-  }
-
-  .big-screen p {
-    font-size: 17px;
-    max-width: 750px;
-    margin: auto;
-    line-height: 1.6;
-  }
-
-  /* SMALL SCREENS */
-  .small-screens {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-
-  .small-screen {
-    background: white;
-    border-radius: 14px;
-    padding: 25px;
-    box-shadow: 0 5px 15px rgba(0,0,0,.08);
-  }
-
-  .small-screen h3 {
-    color: #0b3d91;
-    margin-bottom: 10px;
-  }
-
-  .edit-btn {
-    margin-top: 15px;
-    background: #e3f2fd;
-    color: #0b3d91;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  /* SIDEBAR */
-  .sidebar {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    height: fit-content;
-    box-shadow: 0 5px 15px rgba(0,0,0,.08);
-  }
-
-  .sidebar h3 {
-    color: #0b3d91;
-    margin-bottom: 15px;
-  }
-
-  .pole-item {
-    margin-bottom: 10px;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #f4f6fb;
-  }
-
-  .pole-button {
-    width: 100%;
-    text-align: start;
-    background: transparent;
-    border: none;
-    padding: 14px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #0b3d91;
-    cursor: pointer;
-  }
-
-  .pole-button:hover {
-    background: #e3f2fd;
-  }
-
-  .pole-content {
-    display: none;
-    padding: 10px 12px 14px;
-    background: white;
-  }
-
-  .year-btn {
-    width: 100%;
-    text-align: start;
-    background: #e3f2fd;
-    color: #0b3d91;
-    border: none;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .year-btn:hover {
-    background: #bbdefb;
-  }
-
-  .branch-list {
-    display: none;
-    margin-top: 5px;
-    padding-inline-start: 10px;
-  }
-
-  .branch-btn {
-    width: 100%;
-    text-align: start;
-    background: #f4f6fb;
-    border: none;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin-bottom: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    color: #333;
-  }
-
-  .branch-btn:hover {
-    background: #e3f2fd;
-    color: #0b3d91;
-  }
-
-  /* MODULES PAGE */
-  .modules-page {
-    padding: 30px;
-  }
-
-  .modules-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 25px;
-  }
-
-  .modules-header h2 {
-    color: #0b3d91;
-  }
-
-  .back-btn {
-    background: #eceff1;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .modules-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-  }
-
-  .module-icon {
-    background: white;
-    border: none;
-    border-radius: 14px;
-    padding: 30px 20px;
-    text-align: center;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    color: #0b3d91;
-    box-shadow: 0 5px 15px rgba(0,0,0,.08);
-    transition: .2s;
-  }
-
-  .module-icon:hover {
-    background: #e3f2fd;
-    transform: translateY(-4px);
-  }
-
-  /* MOBILE MENU */
-  .menu-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.45);
-    z-index: 90;
-  }
-
-  .mobile-menu {
+  .poles-panel {
     position: fixed;
     top: 0;
-    right: -320px;
-    width: 300px;
-    max-width: 85%;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    width: min(355px,90vw);
     height: 100%;
-    background: white;
     padding: 20px;
     overflow-y: auto;
-    z-index: 100;
-    transition: right .3s ease;
-    box-shadow: -10px 0 30px rgba(0,0,0,.2);
+    border-radius: 20px 0 0 20px;
+    background: #f0f4fc;
+    box-shadow: -15px 0 45px #0f23462e;
+    transform: translateX(105%);
+    visibility: hidden;
+    transition: transform .25s,visibility .25s;
   }
 
-  .mobile-menu.open {
-    right: 0;
-  }
+  .poles-panel.open { transform: translateX(0); visibility: visible; }
+  .close-menu { display: block; }
+  .channel-avatar { width: 95px; height: 95px; }
+}
 
-  .mobile-menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
+@media (max-width:550px) {
+  .role-grid { grid-template-columns: 1fr; }
+  .role-art { height: 175px; }
+  .entry-heading h1 { font-size: 30px; }
+  .header-inner { flex-wrap: wrap; }
+  .header-controls { margin-left: auto; }
+  .header-controls select { width: 98px; font-size: 12px; }
+  .announcement-grid { grid-template-columns: 1fr; }
+  .channel-info { flex-direction: column; }
+  .channel-banner { height: 125px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+}
 
-  .mobile-menu-header h3 {
-    color: #0b3d91;
-  }
-
-  .close-menu {
-    background: transparent;
-    border: none;
-    font-size: 26px;
-    cursor: pointer;
-    color: #555;
-  }
-
-  html[dir="rtl"] .mobile-menu {
-    right: auto;
-    left: -320px;
-  }
-
-  html[dir="rtl"] .mobile-menu.open {
-    left: 0;
-  }
-
-  /* MOBILE */
-  @media (max-width: 900px) {
-    .layout {
-      grid-template-columns: 1fr;
-      padding: 15px;
-    }
-
-    .sidebar {
-      display: none;
-    }
-
-    .hamburger {
-      display: block;
-    }
-
-    .small-screens {
-      grid-template-columns: 1fr;
-    }
-
-    .big-screen {
-      padding: 30px 20px;
-    }
-
-    .big-screen h2 {
-      font-size: 24px;
-    }
-  }
+@media (prefers-reduced-motion:reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
 </style>
 </head>
+
 <body>
 
-<!-- LOGIN -->
-<section class="login-page page" id="loginPage" style="display:flex;">
-  <div class="login-box">
-    <h1 id="loginTitle">CMC Tanger</h1>
-    <p id="loginSubtitle">Connectez-vous à votre espace étudiant</p>
-
-    <div class="error" id="loginError"></div>
-
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Mot de passe">
-
-    <select id="loginLanguage">
+<!-- ROLE SELECTION -->
+<section class="entry-page" id="entryPage">
+  <div class="entry-wrap">
+    <select class="entry-language language-control" aria-label="Langue">
       <option value="fr">Français</option>
       <option value="ar">العربية</option>
       <option value="en">English</option>
     </select>
 
-    <button class="btn" onclick="login()">Se connecter</button>
+    <div class="entry-heading">
+      <h1>CMC Courses</h1>
+      <p data-i18n="chooseSpace"></p>
+    </div>
+
+    <div class="role-grid">
+      <button class="role-card" type="button" onclick="chooseRole('student')">
+        <svg class="role-art" viewBox="0 0 440 230"
+          role="img" aria-label="Illustration stagiaires">
+          <circle cx="330" cy="65" r="45" fill="#ffffff55"/>
+          <rect x="55" y="45" width="140" height="135" rx="15" fill="#fff"/>
+          <path d="M77 80h95M77 100h75M77 120h90"
+            stroke="#9eb9e8" stroke-width="8"/>
+          <circle cx="285" cy="90" r="32" fill="#e8b894"/>
+          <path d="M251 84q0-48 38-37 35 8 27 44l-17-19-48 12"
+            fill="#263d69"/>
+          <path d="M220 215v-42q0-47 65-47t65 47v42" fill="#345eaa"/>
+          <path d="M232 159l53 25 53-25v50H232z" fill="#fff"/>
+          <path d="M285 184v25" stroke="#b9ccec" stroke-width="3"/>
+        </svg>
+        <div class="role-copy">
+          <h2 data-i18n="student"></h2>
+          <p data-i18n="studentDescription"></p>
+          <span class="role-go" data-i18n="enterSpace"></span>
+        </div>
+      </button>
+
+      <button class="role-card teacher" type="button"
+        onclick="chooseRole('teacher')">
+        <svg class="role-art" viewBox="0 0 440 230"
+          role="img" aria-label="Illustration formateurs">
+          <rect x="180" y="35" width="205" height="125" rx="13" fill="#fff"/>
+          <path d="M205 65h130M205 88h95M205 112h115"
+            stroke="#b4a9dd" stroke-width="8"/>
+          <circle cx="125" cy="86" r="31" fill="#e8b894"/>
+          <path d="M93 83q-3-48 34-37 34 7 27 43l-20-18-41 12"
+            fill="#39345c"/>
+          <path d="M65 215v-44q0-47 60-47t60 47v44" fill="#6961a2"/>
+          <path d="M172 143l66-47" stroke="#e8b894"
+            stroke-width="15" stroke-linecap="round"/>
+          <path d="M122 126l-13 22 16 50 15-50-13-22" fill="#fff"/>
+        </svg>
+        <div class="role-copy">
+          <h2 data-i18n="teacher"></h2>
+          <p data-i18n="teacherDescription"></p>
+          <span class="role-go" data-i18n="enterSpace"></span>
+        </div>
+      </button>
+    </div>
+
+    <p class="entry-note" data-i18n="demoWarning"></p>
   </div>
 </section>
 
-<!-- HOME PAGE -->
-<main class="dashboard page" id="homePage">
-  <header>
-    <h1 id="siteTitle">CMC Tanger</h1>
+<!-- LOGIN -->
+<section class="login-page" id="loginPage" hidden>
+  <form class="login-box" id="loginForm">
+    <button class="secondary small" type="button"
+      onclick="showEntry()" data-i18n="changeRole"></button>
 
-   <div class="header-controls">
-  <select class="language-select" id="dashboardLanguage" onchange="changeLanguage(this.value)">
+    <div class="login-brand">CMC Courses</div>
+    <div><span class="role-badge" id="loginRole"></span></div>
+    <h1 id="loginHeading"></h1>
+    <p class="muted small" data-i18n="demoLogin"></p>
+
+    <label for="loginEmail" data-i18n="email"></label>
+    <input id="loginEmail" type="email" autocomplete="username" required>
+
+    <label for="loginPassword" data-i18n="password"></label>
+    <input id="loginPassword" type="password"
+      autocomplete="current-password" required>
+
+    <button class="primary" id="loginSubmit"
+      type="submit" data-i18n="login"></button>
+  </form>
+</section>
+
+<!-- APPLICATION -->
+<div id="app" hidden>
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="brand" type="button" onclick="goHome()">
+        <span class="brand-title">CMC Courses</span>
+        <span class="brand-subtitle" id="headerRole"></span>
+      </button>
+
+      <div class="header-controls">
+        <select class="language-control" aria-label="Langue">
+          <option value="fr">Français</option>
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+        </select>
+
+        <div class="account-wrap" id="accountWrap">
+          <button class="account-button" id="accountButton"
+            type="button" onclick="toggleAccount()" aria-label="Compte"
+            aria-expanded="false" aria-controls="accountMenu"></button>
+
+          <div class="account-menu" id="accountMenu" hidden>
+            <div class="account-summary" id="accountSummary"></div>
+
+            <div id="teacherAccountActions" hidden>
+              <button class="menu-item" type="button"
+                onclick="openOwnChannel()" data-i18n="myChannel"></button>
+              <button class="menu-item" type="button"
+                onclick="openProfileEditor()" data-i18n="editProfile"></button>
+              <button class="menu-item" type="button"
+                onclick="openResourceEditor()" data-i18n="addResource"></button>
+            </div>
+
+            <button class="menu-item" type="button"
+              onclick="openSettings()" data-i18n="settings"></button>
+            <button class="menu-item logout" type="button"
+              onclick="logout()" data-i18n="logout"></button>
+          </div>
+        </div>
+
+        <button class="hamburger" id="menuButton"
+          type="button" onclick="openMenu()" aria-label="Menu"
+          aria-controls="poleSidebar" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard" id="dashboard">
+
+    <!-- Home: staff. Branch: teachers. Channel: hidden. -->
+    <aside class="people-panel" id="peoplePanel"
+      tabindex="0" aria-labelledby="peopleHeading">
+      <h2 class="panel-heading" id="peopleHeading"></h2>
+      <div class="people-list" id="peopleList"></div>
+    </aside>
+
+    <main class="workspace" id="workspace">
+
+      <section id="homeView">
+        <article class="hero">
+          <span class="tag" data-i18n="featured"></span>
+          <h2 data-i18n="welcome"></h2>
+          <p data-i18n="welcomeText"></p>
+        </article>
+
+        <div class="announcement-grid">
+          <article class="announcement-card">
+            <h3 data-i18n="events"></h3>
+            <p data-i18n="eventsText"></p>
+          </article>
+          <article class="announcement-card">
+            <h3 data-i18n="projects"></h3>
+            <p data-i18n="projectsText"></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="modulesView" hidden>
+        <button class="secondary" type="button"
+          onclick="goHome()" data-i18n="backHome"></button>
+        <h2 class="view-heading" id="modulesTitle" tabindex="-1"></h2>
+        <p class="breadcrumb" id="modulesBreadcrumb"></p>
+        <div class="modules-grid" id="modulesGrid"></div>
+      </section>
+
+      <section id="channelView" hidden>
+        <button class="secondary" type="button"
+          onclick="leaveChannel()" data-i18n="back"></button>
+
+        <div class="channel-banner" id="channelBanner"></div>
+
+        <div class="channel-info">
+          <div id="channelAvatar"></div>
+
+          <div class="channel-details">
+            <h2 id="channelName" tabindex="-1"></h2>
+            <p class="muted" id="channelSpecialty"></p>
+
+            <div class="channel-stats" aria-live="polite">
+              <span id="followerCount"></span>
+              <span id="videoCount"></span>
+            </div>
+
+            <button class="follow-button" id="followButton"
+              type="button" onclick="toggleFollow()"></button>
+
+            <p class="muted bio" id="channelBio"></p>
+            <p class="muted small" data-i18n="localCounts"></p>
+          </div>
+        </div>
+
+        <div class="owner-tools" id="ownerTools" hidden>
+          <button class="primary small" type="button"
+            onclick="openProfileEditor()" data-i18n="editProfile"></button>
+          <button class="secondary small" type="button"
+            onclick="openResourceEditor()" data-i18n="addResource"></button>
+        </div>
+
+        <div class="channel-tabs" role="tablist" aria-label="Ressources">
+          <button class="channel-tab" id="tab-pdfs" role="tab"
+            type="button" aria-controls="resourcePanel"
+            aria-selected="true" onclick="selectTab('pdfs')">PDF</button>
+
+          <button class="channel-tab" id="tab-exercises" role="tab"
+            type="button" aria-controls="resourcePanel"
+            aria-selected="false" tabindex="-1"
+            onclick="selectTab('exercises')"
+            data-i18n="exercisesExams"></button>
+
+          <button class="channel-tab" id="tab-videos" role="tab"
+            type="button" aria-controls="resourcePanel"
+            aria-selected="false" tabindex="-1"
+            onclick="selectTab('videos')" data-i18n="videos"></button>
+        </div>
+
+        <div id="resourcePanel" role="tabpanel"
+          aria-labelledby="tab-pdfs" tabindex="0"></div>
+      </section>
+
+    </main>
+
+    <aside class="poles-panel" id="poleSidebar" aria-labelledby="polesHeading">
+      <div class="poles-heading">
+        <h2 class="panel-heading" id="polesHeading" data-i18n="poles"></h2>
+        <button class="close-menu" id="closeMenuButton"
+          type="button" onclick="closeMenu()" aria-label="Fermer">×</button>
+      </div>
+      <div id="poleMenu"></div>
+    </aside>
+
+  </div>
+</div>
+
+<div class="menu-overlay" id="menuOverlay"
+  onclick="closeMenu()" hidden></div>
+
+<!-- PROFILE EDITOR -->
+<dialog id="profileDialog">
+  <form id="profileForm">
+    <div class="dialog-heading">
+      <h2 data-i18n="editProfile"></h2>
+      <button class="dialog-close" type="button"
+        onclick="document.getElementById('profileDialog').close()"
+        aria-label="Fermer">×</button>
+    </div>
+
+    <label for="profileName" data-i18n="fullName"></label>
+    <input id="profileName" maxlength="100" required>
+
+    <label for="profileSpecialty" data-i18n="specialty"></label>
+    <input id="profileSpecialty" maxlength="160">
+
+    <label for="profileBio" data-i18n="bio"></label>
+    <textarea id="profileBio" maxlength="2000"></textarea>
+
+    <div class="form-row">
+      <div>
+        <label for="profilePhoto" data-i18n="profilePhoto"></label>
+        <input id="profilePhoto" type="file" accept="image/*">
+      </div>
+      <div>
+        <label for="profileBanner" data-i18n="banner"></label>
+        <input id="profileBanner" type="file" accept="image/*">
+      </div>
+    </div>
+
+    <p class="dialog-note" data-i18n="imageHint"></p>
+
+    <label for="profileBranches" data-i18n="myBranches"></label>
+    <select id="profileBranches" multiple></select>
+    <p class="dialog-note" data-i18n="branchHint"></p>
+
+    <div class="actions">
+      <button class="primary" type="submit" data-i18n="save"></button>
+      <button class="secondary" type="button"
+        onclick="document.getElementById('profileDialog').close()"
+        data-i18n="cancel"></button>
+    </div>
+  </form>
+</dialog>
+
+<!-- RESOURCE EDITOR -->
+<dialog id="resourceDialog">
+  <form id="resourceForm">
+    <div class="dialog-heading">
+      <h2 data-i18n="resourceEditor"></h2>
+      <button class="dialog-close" type="button"
+        onclick="document.getElementById('resourceDialog').close()"
+        aria-label="Fermer">×</button>
+    </div>
+
+    <label for="resourceTitle" data-i18n="title"></label>
+    <input id="resourceTitle" maxlength="150" required>
+
+    <label for="resourceKind" data-i18n="type"></label>
+    <select id="resourceKind">
+      <option value="pdfs">PDF</option>
+      <option value="exercises" data-i18n="exercises"></option>
+      <option value="exams" data-i18n="exams"></option>
+      <option value="videos" data-i18n="videos"></option>
+    </select>
+
+    <label for="resourceDescription" data-i18n="description"></label>
+    <textarea id="resourceDescription" maxlength="1000"></textarea>
+
+    <label for="resourceURL" data-i18n="resourceURL"></label>
+    <input id="resourceURL" type="url" placeholder="https://…">
+
+    <label for="resourceFile" data-i18n="orFile"></label>
+    <input id="resourceFile" type="file" accept="application/pdf,.pdf">
+
+    <p class="dialog-note" id="existingFileNote"></p>
+    <p class="dialog-note" data-i18n="fileHint"></p>
+
+    <div class="actions">
+      <button class="primary" type="submit" data-i18n="save"></button>
+      <button class="secondary" type="button"
+        onclick="document.getElementById('resourceDialog').close()"
+        data-i18n="cancel"></button>
+    </div>
+  </form>
+</dialog>
+
+<!-- SETTINGS -->
+<dialog id="settingsDialog">
+  <div class="dialog-heading">
+    <h2 data-i18n="settings"></h2>
+    <button class="dialog-close" type="button"
+      onclick="document.getElementById('settingsDialog').close()"
+      aria-label="Fermer">×</button>
+  </div>
+
+  <p class="muted" id="settingsAccount"></p>
+  <label data-i18n="language" for="settingsLanguage"></label>
+
+  <select id="settingsLanguage" class="language-control">
     <option value="fr">Français</option>
     <option value="ar">العربية</option>
     <option value="en">English</option>
   </select>
 
-  <button class="logout-btn" onclick="logout()" id="logoutBtn">Déconnexion</button>
+  <p class="dialog-note" data-i18n="databaseNote"></p>
+</dialog>
 
-  <button class="hamburger" onclick="openMenu()">☰</button>
-</div>
-  </header>
-
-  <div class="layout">
-    <section>
-      <div class="big-screen">
-        <h2 id="bigTitle">Bienvenue à la CMC Tanger</h2>
-        <p id="bigText">
-          Retrouvez ici les annonces importantes, les projets, les événements
-          et les nouvelles de la Cité des Métiers et des Compétences.
-        </p>
-        <button class="edit-btn" onclick="editBigScreen()">Modifier</button>
-      </div>
-
-      <div class="small-screens">
-        <div class="small-screen">
-          <h3 id="smallTitle1">Événements</h3>
-          <p id="smallText1">
-            Journée portes ouvertes, concours, clubs étudiants et activités
-            seront publiés ici.
-          </p>
-          <button class="edit-btn" onclick="editSmallScreen(1)">Modifier</button>
-        </div>
-
-        <div class="small-screen">
-          <h3 id="smallTitle2">Projets étudiants</h3>
-          <p id="smallText2">
-            Les projets, competitions et initiatives des étudiants de la CMC
-            seront affichés ici.
-          </p>
-          <button class="edit-btn" onclick="editSmallScreen(2)">Modifier</button>
-        </div>
-      </div>
-    </section>
-
-    <aside class="sidebar">
-      <h3 id="sidebarTitle">Pôles CMC</h3>
-      <div id="sidebarPoles"></div>
-    </aside>
-  </div>
-</main>
-
-<!-- MODULES PAGE -->
-<main class="modules-page page" id="modulesPage">
-  <div class="modules-header">
-    <h2 id="modulesTitle">Modules</h2>
-    <button class="back-btn" onclick="goHome()" id="modulesBackBtn">Retour</button>
-  </div>
-
-  <div class="modules-grid" id="modulesGrid"></div>
-</main>
-
-<!-- MOBILE MENU -->
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-
-<aside class="mobile-menu" id="mobileMenu">
-  <div class="mobile-menu-header">
-    <h3 id="mobileMenuTitle">Pôles CMC</h3>
-    <button class="close-menu" onclick="closeMenu()">×</button>
-  </div>
-
-  <div id="mobilePoles"></div>
-</aside>
+<div class="status" id="status" role="status" hidden></div>
 
 <script>
+/* TRANSLATIONS */
+
 const translations = {
   fr: {
-    loginTitle: "CMC Tanger",
-    loginSubtitle: "Connectez-vous à votre espace étudiant",
-    email: "Email",
-    password: "Mot de passe",
-    loginButton: "Se connecter",
-    logout: "Déconnexion",
-    sidebarPoles: "Pôles CMC",
-    year1: "Première année",
-    year2: "Deuxième année",
-    modules: "Modules",
-    back: "Retour",
-    edit: "Modifier",
-    error: "Veuillez entrer un email et un mot de passe."
-  },
-
-  ar: {
-    loginTitle: "مدينة المهن والكفاءات طنجة",
-    loginSubtitle: "سجّل الدخول إلى فضاءك الطلابي",
-    email: "البريد الإلكتروني",
-    password: "كلمة المرور",
-    loginButton: "تسجيل الدخول",
-    logout: "تسجيل الخروج",
-    sidebarPoles: "قطاعات المدينة",
-    year1: "السنة الأولى",
-    year2: "السنة الثانية",
-    modules: "الوحدات",
-    back: "رجوع",
-    edit: "تعديل",
-    error: "يرجى إدخال البريد الإلكتروني وكلمة المرور."
+    chooseSpace:"Choisissez votre espace",
+    student:"Stagiaires",
+    teacher:"Professeurs & Formateurs",
+    studentDescription:"Consultez les modules, les cours et les chaînes des formateurs.",
+    teacherDescription:"Accédez à votre chaîne et gérez votre profil et vos ressources.",
+    enterSpace:"Accéder à mon espace →",
+    demoWarning:"Prototype : connexion simulée et données enregistrées uniquement dans ce navigateur.",
+    changeRole:"← Changer d’espace",
+    login:"Se connecter",
+    demoLogin:"Utilisez des identifiants fictifs. Le mot de passe n’est ni vérifié ni enregistré.",
+    email:"Email",
+    password:"Mot de passe",
+    language:"Langue",
+    logout:"Se déconnecter",
+    settings:"Paramètres",
+    myChannel:"Ma chaîne",
+    editProfile:"Modifier mon profil",
+    addResource:"Ajouter une ressource",
+    resourceEditor:"Ressource de la chaîne",
+    staff:"Responsables CMC",
+    teachers:"Formateurs de la filière",
+    unnamed:"Nom à ajouter",
+    teacherPlaceholder:"Formateur",
+    poles:"Pôles CMC",
+    year1:"Première année",
+    year2:"Deuxième année",
+    modules:"Modules",
+    backHome:"Retour aux annonces",
+    back:"Retour",
+    featured:"À la une",
+    welcome:"Bienvenue sur CMC Courses",
+    welcomeText:"Retrouvez vos cours, les annonces importantes, les projets et les événements de votre établissement.",
+    events:"Événements",
+    eventsText:"Journées portes ouvertes, clubs et activités étudiantes.",
+    projects:"Projets étudiants",
+    projectsText:"Projets, concours et initiatives de vos collègues.",
+    follow:"Suivre",
+    following:"Abonné",
+    followers:"abonnés",
+    videos:"Vidéos",
+    exercises:"Exercices",
+    exams:"Examens",
+    exercisesExams:"Exercices & Examens",
+    bioPlaceholder:"La biographie du formateur sera ajoutée ici.",
+    empty:"Aucune ressource publiée dans cette section.",
+    localCounts:"Démo : abonnements et données locaux à ce navigateur, sans total partagé.",
+    fullName:"Nom complet",
+    specialty:"Spécialité",
+    bio:"Biographie",
+    profilePhoto:"Photo de profil",
+    banner:"Image de couverture",
+    imageHint:"Images : 5 Mo maximum chacune. Laissez vide pour conserver les images actuelles.",
+    myBranches:"Mes filières",
+    branchHint:"Sélection multiple : Ctrl/Cmd + clic sur ordinateur.",
+    save:"Enregistrer",
+    cancel:"Annuler",
+    title:"Titre",
+    type:"Type",
+    description:"Description",
+    resourceURL:"Lien public (facultatif)",
+    orFile:"Ou choisir un fichier",
+    fileHint:"Choisissez un lien OU un fichier. Limite démo : 50 Mo par fichier. Les fichiers restent dans ce navigateur.",
+    edit:"Modifier",
+    delete:"Supprimer",
+    open:"Ouvrir",
+    saved:"Enregistré dans ce navigateur.",
+    deleted:"Ressource supprimée.",
+    storageError:"Enregistrement impossible. Vérifiez l’espace disponible et les autorisations du navigateur.",
+    sourceError:"Ajoutez un lien ou un fichier, mais pas les deux.",
+    typeError:"Utilisez un PDF pour les documents, ou un fichier vidéo pour les vidéos.",
+    imageError:"Veuillez choisir une image valide.",
+    sizeError:"Le fichier dépasse la limite autorisée.",
+    invalidURL:"Utilisez un lien HTTP ou HTTPS valide.",
+    deleteConfirm:"Supprimer cette ressource de votre chaîne ?",
+    moduleNotice:"Les ressources de ce module seront ajoutées plus tard :",
+    databaseNote:"Les comptes, permissions et fichiers partagés seront reliés à un backend plus tard. Aucun mot de passe n’est conservé.",
+    existingFile:"Fichier actuel : ",
+    studentAccount:"Compte stagiaire",
+    teacherAccount:"Compte formateur"
   },
 
   en: {
-    loginTitle: "CMC Tangier",
-    loginSubtitle: "Log in to your student space",
-    email: "Email",
-    password: "Password",
-    loginButton: "Log in",
-    logout: "Log out",
-    sidebarPoles: "CMC Poles",
-    year1: "First year",
-    year2: "Second year",
-    modules: "Modules",
-    back: "Back",
-    edit: "Edit",
-    error: "Please enter an email and password."
+    chooseSpace:"Choose your space",
+    student:"Students",
+    teacher:"Teachers & Instructors",
+    studentDescription:"Browse modules, courses and instructor channels.",
+    teacherDescription:"Access your channel and manage your profile and resources.",
+    enterSpace:"Enter my space →",
+    demoWarning:"Prototype: simulated login and data saved only in this browser.",
+    changeRole:"← Change space",
+    login:"Log in",
+    demoLogin:"Use fictional credentials. Passwords are neither verified nor saved.",
+    email:"Email",
+    password:"Password",
+    language:"Language",
+    logout:"Log out",
+    settings:"Settings",
+    myChannel:"My channel",
+    editProfile:"Edit my profile",
+    addResource:"Add a resource",
+    resourceEditor:"Channel resource",
+    staff:"CMC staff",
+    teachers:"Branch instructors",
+    unnamed:"Name to be added",
+    teacherPlaceholder:"Instructor",
+    poles:"CMC Poles",
+    year1:"First year",
+    year2:"Second year",
+    modules:"Modules",
+    backHome:"Back to announcements",
+    back:"Back",
+    featured:"Featured",
+    welcome:"Welcome to CMC Courses",
+    welcomeText:"Find your courses, important announcements, projects and events from your institution.",
+    events:"Events",
+    eventsText:"Open days, clubs and student activities.",
+    projects:"Student projects",
+    projectsText:"Projects, competitions and student initiatives.",
+    follow:"Follow",
+    following:"Following",
+    followers:"followers",
+    videos:"Videos",
+    exercises:"Exercises",
+    exams:"Exams",
+    exercisesExams:"Exercises & Exams",
+    bioPlaceholder:"The instructor’s bio will appear here.",
+    empty:"No resources have been published in this section.",
+    localCounts:"Demo: follows and data are local to this browser, not shared totals.",
+    fullName:"Full name",
+    specialty:"Specialty",
+    bio:"Biography",
+    profilePhoto:"Profile photo",
+    banner:"Cover image",
+    imageHint:"Images: up to 5 MB each. Leave blank to keep current images.",
+    myBranches:"My branches",
+    branchHint:"Select multiple using Ctrl/Cmd + click on a computer.",
+    save:"Save",
+    cancel:"Cancel",
+    title:"Title",
+    type:"Type",
+    description:"Description",
+    resourceURL:"Public link (optional)",
+    orFile:"Or choose a file",
+    fileHint:"Choose a link OR a file. Demo limit: 50 MB per file. Files stay in this browser.",
+    edit:"Edit",
+    delete:"Delete",
+    open:"Open",
+    saved:"Saved in this browser.",
+    deleted:"Resource deleted.",
+    storageError:"Could not save. Check available storage and browser permissions.",
+    sourceError:"Add a link or a file, but not both.",
+    typeError:"Use a PDF for documents, or a video file for videos.",
+    imageError:"Please choose a valid image.",
+    sizeError:"The file exceeds the allowed size.",
+    invalidURL:"Use a valid HTTP or HTTPS link.",
+    deleteConfirm:"Delete this resource from your channel?",
+    moduleNotice:"Resources will be added later for this module:",
+    databaseNote:"Shared accounts, permissions and files will require a backend later. No passwords are retained.",
+    existingFile:"Current file: ",
+    studentAccount:"Student account",
+    teacherAccount:"Instructor account"
+  },
+
+  ar: {
+    chooseSpace:"اختر فضاءك",
+    student:"المتدربون",
+    teacher:"الأساتذة والمكوّنون",
+    studentDescription:"تصفح الوحدات والدروس وقنوات المكوّنين.",
+    teacherDescription:"ادخل إلى قناتك وعدّل ملفك ومواردك التعليمية.",
+    enterSpace:"الدخول إلى فضائي ←",
+    demoWarning:"نسخة تجريبية: دخول محاكى وبيانات محفوظة في هذا المتصفح فقط.",
+    changeRole:"← تغيير الفضاء",
+    login:"تسجيل الدخول",
+    demoLogin:"استخدم بيانات غير حقيقية. لا يتم التحقق من كلمة المرور أو حفظها.",
+    email:"البريد الإلكتروني",
+    password:"كلمة المرور",
+    language:"اللغة",
+    logout:"تسجيل الخروج",
+    settings:"الإعدادات",
+    myChannel:"قناتي",
+    editProfile:"تعديل ملفي",
+    addResource:"إضافة مورد",
+    resourceEditor:"مورد القناة",
+    staff:"مسؤولو المدينة",
+    teachers:"مكوّنو الشعبة",
+    unnamed:"يُضاف الاسم لاحقاً",
+    teacherPlaceholder:"المكوّن",
+    poles:"أقطاب المدينة",
+    year1:"السنة الأولى",
+    year2:"السنة الثانية",
+    modules:"الوحدات",
+    backHome:"العودة إلى الإعلانات",
+    back:"رجوع",
+    featured:"أبرز المستجدات",
+    welcome:"مرحباً بكم في CMC Courses",
+    welcomeText:"تجدون هنا الدروس والإعلانات المهمة والمشاريع والفعاليات الخاصة بمؤسستكم.",
+    events:"الفعاليات",
+    eventsText:"الأبواب المفتوحة والأندية والأنشطة الطلابية.",
+    projects:"مشاريع الطلاب",
+    projectsText:"المشاريع والمسابقات ومبادرات المتدربين.",
+    follow:"متابعة",
+    following:"متابَع",
+    followers:"متابعين",
+    videos:"الفيديوهات",
+    exercises:"التمارين",
+    exams:"الامتحانات",
+    exercisesExams:"التمارين والامتحانات",
+    bioPlaceholder:"ستُضاف السيرة الذاتية للمكوّن هنا.",
+    empty:"لم تُنشر موارد في هذا القسم بعد.",
+    localCounts:"تجريبي: المتابعة والبيانات محلية في هذا المتصفح وليست أرقاماً مشتركة.",
+    fullName:"الاسم الكامل",
+    specialty:"التخصص",
+    bio:"السيرة الذاتية",
+    profilePhoto:"صورة الملف",
+    banner:"صورة الغلاف",
+    imageHint:"الصور: 5 ميغابايت كحد أقصى لكل صورة. اترك الحقل فارغاً للاحتفاظ بالصورة.",
+    myBranches:"شُعبي",
+    branchHint:"لتحديد عدة شعب على الحاسوب استخدم Ctrl أو Cmd مع النقر.",
+    save:"حفظ",
+    cancel:"إلغاء",
+    title:"العنوان",
+    type:"النوع",
+    description:"الوصف",
+    resourceURL:"رابط عام (اختياري)",
+    orFile:"أو اختر ملفاً",
+    fileHint:"اختر رابطاً أو ملفاً وليس كليهما. الحد التجريبي 50 ميغابايت. تبقى الملفات في هذا المتصفح.",
+    edit:"تعديل",
+    delete:"حذف",
+    open:"فتح",
+    saved:"تم الحفظ في هذا المتصفح.",
+    deleted:"تم حذف المورد.",
+    storageError:"تعذر الحفظ. تحقق من المساحة وأذونات المتصفح.",
+    sourceError:"أضف رابطاً أو ملفاً وليس كليهما.",
+    typeError:"استخدم PDF للوثائق أو ملف فيديو للفيديوهات.",
+    imageError:"يرجى اختيار صورة صالحة.",
+    sizeError:"الملف أكبر من الحد المسموح.",
+    invalidURL:"استخدم رابط HTTP أو HTTPS صالحاً.",
+    deleteConfirm:"هل تريد حذف هذا المورد من قناتك؟",
+    moduleNotice:"ستُضاف موارد هذه الوحدة لاحقاً:",
+    databaseNote:"ستحتاج الحسابات والصلاحيات والملفات المشتركة إلى خادم لاحقاً. لا تُحفظ كلمات المرور.",
+    existingFile:"الملف الحالي: ",
+    studentAccount:"حساب متدرب",
+    teacherAccount:"حساب مكوّن"
   }
 };
 
+/* COURSE DATA */
+
+function modules(text) {
+  return text.split(";").map(item => item.trim()).filter(Boolean);
+}
+
+function branch(fr, ar, en, list) {
+  return { name: { fr, ar, en }, modules: modules(list) };
+}
+
+const commonTS = modules(
+  "Français; Anglais technique; Culture entrepreneuriale; Compétences comportementales; Entrepreneuriat - PIE 2; Culture et techniques avancées du numérique"
+);
+
+function tsBranch(fr, ar, en, list) {
+  return {
+    name: { fr, ar, en },
+    modules: [...commonTS, ...modules(list)]
+  };
+}
+
+/* Gestion & Commerce uses your supplied presentation.
+   Other poles still contain example data. */
 const poles = [
   {
-    id: "industrie",
-    fr: "Industrie",
-    ar: "الصناعة",
-    en: "Industry",
-    branches: {
-      1: [
-        {
-          name: { fr: "Génie Mécanique", ar: "الهندسة الميكانيكية", en: "Mechanical Engineering" },
-          modules: [
-            "Dessin Industriel",
-            "Mécanique Générale",
-            "Résistance des Matériaux",
-            "Fabrication Mécanique",
-            "Maintenance Industrielle",
-            "Automatisme"
-          ]
-        },
-        {
-          name: { fr: "Électromécanique", ar: "الكهروميكانيك", en: "Electromechanics" },
-          modules: [
-            "Électricité Générale",
-            "Électronique",
-            "Machines Électriques",
-            "Automatismes",
-            "Maintenance des Équipements"
-          ]
-        }
+    id:"industrie",
+    icon:"⚙",
+    name:{fr:"Industrie",ar:"الصناعة",en:"Industry"},
+    branches:{
+      1:[
+        branch(
+          "Génie Mécanique","الهندسة الميكانيكية","Mechanical Engineering",
+          "Dessin Industriel; Mécanique Générale; Résistance des Matériaux; Fabrication Mécanique; Maintenance Industrielle; Automatisme"
+        ),
+        branch(
+          "Électromécanique","الكهروميكانيك","Electromechanics",
+          "Électricité Générale; Électronique; Machines Électriques; Automatismes; Maintenance des Équipements"
+        )
       ],
-      2: [
-        {
-          name: { fr: "Automatisation et Instrumentation", ar: "الأتمتة والقياس الصناعي", en: "Automation and Instrumentation" },
-          modules: [
-            "Automates Programmables",
-            "Régulation Industrielle",
-            "Instrumentation",
-            "Réseaux Industriels",
-            "Supervision"
-          ]
-        }
+      2:[
+        branch(
+          "Automatisation et Instrumentation","الأتمتة والقياس الصناعي","Automation and Instrumentation",
+          "Automates Programmables; Régulation Industrielle; Instrumentation; Réseaux Industriels; Supervision"
+        )
       ]
     }
   },
-
   {
-    id: "sante",
-    fr: "Santé",
-    ar: "الصحة",
-    en: "Health",
-    branches: {
-      1: [
-        {
-          name: { fr: "Soins Infirmiers", ar: "التمريض", en: "Nursing" },
-          modules: [
-            "Anatomie",
-            "Physiologie",
-            "Soins de Base",
-            "Hygiène Hospitalière",
-            "Pharmacologie"
-          ]
-        }
+    id:"sante",
+    icon:"✚",
+    name:{fr:"Santé",ar:"الصحة",en:"Health"},
+    branches:{
+      1:[
+        branch(
+          "Soins Infirmiers","التمريض","Nursing",
+          "Anatomie; Physiologie; Soins de Base; Hygiène Hospitalière; Pharmacologie"
+        )
       ],
-      2: [
-        {
-          name: { fr: "Techniques de Laboratoire", ar: "تقنيات المختبر", en: "Laboratory Techniques" },
-          modules: [
-            "Biochimie",
-            "Microbiologie",
-            "Hématologie",
-            "Analyse Médicale"
-          ]
-        }
+      2:[
+        branch(
+          "Techniques de Laboratoire","تقنيات المختبر","Laboratory Techniques",
+          "Biochimie; Microbiologie; Hématologie; Analyse Médicale"
+        )
       ]
     }
   },
-
   {
-    id: "gestion",
-    fr: "Gestion & Commerce",
-    ar: "التدبير والتجارة",
-    en: "Management & Commerce",
-    branches: {
-      1: [
-        {
-          name: { fr: "TS Gestion des Entreprises - Tronc commun", ar: "تدبير المقاولات - الجذع المشترك", en: "Business Management - Common Core" },
-          modules: [
-            "Arabe",
-            "Français",
-            "Anglais technique / Espagnol",
-            "Culture entrepreneuriale - Partie 1",
-            "Compétences comportementales et sociales",
-            "Entrepreneuriat - PIE 1",
-            "Culture et techniques avancées du numérique",
-            "Métier et formation",
-            "Droit fondamental",
-            "Management des organisations",
-            "Comptabilité générale 1",
-            "Gestion électronique des données",
-            "Marketing",
-            "Comptabilité générale 2",
-            "Écrits professionnels",
-            "Statistique",
-            "Logiciel de Gestion Commerciale et Comptable"
-          ]
-        },
-        {
-          name: { fr: "T Assistant Administratif - Tronc commun", ar: "مساعد إداري - الجذع المشترك", en: "Administrative Assistant - Common Core" },
-          modules: [
-            "Arabe",
-            "Français",
-            "Anglais technique",
-            "Culture entrepreneuriale",
-            "Compétences comportementales",
-            "Entrepreneuriat - PIE 1",
-            "Culture et techniques avancées du numérique",
-            "Métiers et formation dans le secteur Gestion & Commerce",
-            "Introduction au droit",
-            "Entreprise et son environnement",
-            "Comptabilité générale : concepts de base et opérations courantes",
-            "Techniques d’accueil",
-            "Gestion documentaire",
-            "Techniques quantitatives de gestion",
-            "Marketing fondamental",
-            "Écrits professionnels",
-            "Logiciel comptable et commercial"
-          ]
-        }
+    id:"gestion",
+    icon:"▤",
+    name:{fr:"Gestion & Commerce",ar:"التدبير والتجارة",en:"Management & Commerce"},
+    branches:{
+      1:[
+        branch(
+          "TS Gestion des Entreprises — Tronc commun",
+          "تقني متخصص: تدبير المقاولات — الجذع المشترك",
+          "TS Business Management — Common Core",
+          "Arabe; Français; Anglais technique / Espagnol; Culture entrepreneuriale - Partie 1; Compétences comportementales et sociales (Soft Skills); Entrepreneuriat - PIE 1; Culture et techniques avancées du numérique; Métier et formation; Droit fondamental; Management des organisations; Comptabilité générale 1; Gestion électronique des données; Marketing; Comptabilité générale 2; Écrits professionnels; Statistique; Logiciel de Gestion Commerciale, Comptable"
+        ),
+        branch(
+          "T Assistant Administratif — Tronc commun",
+          "تقني: مساعد إداري — الجذع المشترك",
+          "T Administrative Assistant — Common Core",
+          "Arabe; Français; Anglais technique; Culture entrepreneuriale; Compétences comportementales; Entrepreneuriat - PIE 1; Culture et techniques avancées du numérique; Métiers et formation dans le secteur Gestion & Commerce; Introduction au droit; Entreprise et son environnement; Comptabilité générale : concepts de base et opérations courantes; Techniques d’accueil; Gestion documentaire; Techniques quantitatives de gestion; Marketing fondamental; Écrits professionnels; Logiciel comptable et commercial"
+        )
       ],
-
-      2: [
-        {
-          name: { fr: "TS Commerce & Marketing", ar: "تجارة وتسويق", en: "Commerce & Marketing" },
-          modules: [
-            "Français",
-            "Anglais technique",
-            "Culture entrepreneuriale",
-            "Compétences comportementales",
-            "Entrepreneuriat - PIE 2",
-            "Culture et techniques avancées du numérique",
-            "Bureautique",
-            "Droit du travail",
-            "Droit commercial",
-            "Marketing digital",
-            "Techniques de vente et de négociation",
-            "E-commerce",
-            "Management de la force de vente",
-            "Gestion des approvisionnements",
-            "Trade marketing",
-            "Logiciel Sphinx",
-            "Marketing international",
-            "Merchandising"
-          ]
-        },
-        {
-          name: { fr: "TS Comptabilité & Finance", ar: "محاسبة ومالية", en: "Accounting & Finance" },
-          modules: [
-            "Français",
-            "Anglais technique",
-            "Culture entrepreneuriale",
-            "Compétences comportementales",
-            "Entrepreneuriat - PIE 2",
-            "Culture et techniques avancées du numérique",
-            "Pratique de la paie",
-            "Contrôle de gestion - comptabilité analytique d’exploitation",
-            "Mathématiques financières",
-            "Droit des affaires",
-            "Bureautique avancée",
-            "Comptabilité approfondie",
-            "Analyse financière",
-            "Fiscalité de l’entreprise",
-            "Contrôle de gestion - budgets et tableau de bord"
-          ]
-        },
-        {
-          name: { fr: "TS Office Manager", ar: "مدير مكتب", en: "Office Manager" },
-          modules: [
-            "Français",
-            "Anglais technique",
-            "Culture entrepreneuriale",
-            "Compétences comportementales",
-            "Entrepreneuriat - PIE 2",
-            "Culture et techniques avancées du numérique",
-            "Techniques de résolution des problèmes",
-            "Gestion de temps",
-            "Droit des affaires",
-            "Organisation et planification des activités",
-            "Gestion administrative du personnel",
-            "Techniques d’accueil",
-            "Correspondance en français",
-            "Correspondance en anglais",
-            "Correspondance en arabe",
-            "Bureautique avancée",
-            "Contrôle de gestion",
-            "Gestion des approvisionnements"
-          ]
-        },
-        {
-          name: { fr: "TS Ressources Humaines", ar: "الموارد البشرية", en: "Human Resources" },
-          modules: [
-            "Français",
-            "Anglais technique",
-            "Culture entrepreneuriale",
-            "Compétences comportementales",
-            "Entrepreneuriat - PIE 2",
-            "Culture et techniques avancées du numérique",
-            "Droit social",
-            "Gestion administrative du personnel",
-            "Pratique de la paie",
-            "Gestion financière",
-            "Bureautique avancée",
-            "GRH",
-            "Gestion prévisionnelle des emplois et des compétences",
-            "Contrôle de gestion"
-          ]
-        },
-        {
-          name: { fr: "T Assistant Administratif - Commerce", ar: "مساعد إداري - تجارة", en: "Administrative Assistant - Commerce" },
-          modules: [
-            "Bureautique",
-            "Techniques de vente et négociation",
-            "Droit commercial",
-            "Droit du travail",
-            "Marketing approfondi",
-            "Approvisionnements",
-            "Gestion et animation du point de vente",
-            "Merchandising",
-            "Marketing de la grande distribution",
-            "E-commerce",
-            "E-marketing"
-          ]
-        },
-        {
-          name: { fr: "T Assistant Administratif - Comptabilité", ar: "مساعد إداري - محاسبة", en: "Administrative Assistant - Accounting" },
-          modules: [
-            "Droit du travail",
-            "Comptabilité générale - travaux de fin d’exercice",
-            "Mathématiques financières",
-            "Gestion de la paie",
-            "Bureautique avancée",
-            "Comptabilité analytique",
-            "Fiscalité de l’entreprise",
-            "Comptabilité des sociétés",
-            "Gestion de caisse et des régies d’avance"
-          ]
-        },
-        {
-          name: { fr: "T Assistant Administratif - Gestion", ar: "مساعد إداري - تدبير", en: "Administrative Assistant - Management" },
-          modules: [
-            "Droit du travail",
-            "Comptabilité générale - travaux de fin d’exercice",
-            "Gestion des agendas",
-            "Gestion administrative du personnel",
-            "Techniques de prise de notes",
-            "Bureautique avancée",
-            "Comptabilité analytique",
-            "Correspondance en français",
-            "Correspondance en arabe",
-            "Pratique de la paie"
-          ]
-        }
+      2:[
+        tsBranch(
+          "TS Commerce & Marketing","تقني متخصص: التجارة والتسويق","TS Commerce & Marketing",
+          "Bureautique; Droit du travail; Droit commercial; Marketing digital; Techniques de vente et de négociation; E-commerce; Management de la force de vente; Gestion des approvisionnements; Trade marketing; Logiciel Sphinx; Marketing international; Merchandising"
+        ),
+        tsBranch(
+          "TS Comptabilité & Finance","تقني متخصص: المحاسبة والمالية","TS Accounting & Finance",
+          "Pratique de la paie; Contrôle de gestion - comptabilité analytique d’exploitation; Mathématiques financières; Droit des affaires; Bureautique avancée; Comptabilité approfondie; Analyse financière; Fiscalité de l’entreprise; Contrôle de gestion - budgets et tableau de bord"
+        ),
+        tsBranch(
+          "TS Office Manager","تقني متخصص: مدير مكتب","TS Office Manager",
+          "Techniques de résolution des problèmes; Gestion de temps; Droit des affaires; Organisation et planification des activités; Gestion administrative du personnel; Techniques d’accueil; Correspondance en français; Correspondance en anglais; Correspondance en arabe; Bureautique avancée; Contrôle de gestion; Gestion des approvisionnements"
+        ),
+        tsBranch(
+          "TS Ressources Humaines","تقني متخصص: الموارد البشرية","TS Human Resources",
+          "Droit social; Gestion administrative du personnel; Pratique de la paie; Gestion financière; Bureautique avancée; GRH; Gestion prévisionnelle des emplois et des compétences; Contrôle de gestion"
+        ),
+        branch(
+          "T Assistant Administratif — Commerce","تقني: مساعد إداري — التجارة","T Administrative Assistant — Commerce",
+          "Bureautique; Techniques de vente et négociation; Droit commercial; Droit du travail; Marketing approfondi; Approvisionnements; Gestion et animation du point de vente; Merchandising; Marketing de la grande distribution; E-commerce; E-marketing"
+        ),
+        branch(
+          "T Assistant Administratif — Comptabilité","تقني: مساعد إداري — المحاسبة","T Administrative Assistant — Accounting",
+          "Droit du travail; Comptabilité générale - travaux de fin d’exercice; Mathématiques financières; Gestion de la paie; Bureautique avancée; Comptabilité analytique; Fiscalité de l’entreprise; Comptabilité des sociétés; Gestion de caisse et des régies d’avance"
+        ),
+        branch(
+          "T Assistant Administratif — Gestion","تقني: مساعد إداري — التدبير","T Administrative Assistant — Management",
+          "Droit du travail; Comptabilité générale - travaux de fin d’exercice; Gestion des agendas; Gestion administrative du personnel; Techniques de prise de notes; Bureautique avancée; Comptabilité analytique; Correspondance en français; Correspondance en arabe; Pratique de la paie"
+        )
       ]
     }
   },
-
   {
-    id: "digital",
-    fr: "Digital & Intelligence Artificielle",
-    ar: "الرقمنة والذكاء الاصطناعي",
-    en: "Digital & Artificial Intelligence",
-    branches: {
-      1: [
-        {
-          name: { fr: "Développement Digital", ar: "التطوير الرقمي", en: "Digital Development" },
-          modules: [
-            "HTML et CSS",
-            "JavaScript",
-            "Python",
-            "Bases de Données",
-            "Algorithmique"
-          ]
-        }
+    id:"digital",
+    icon:"⌘",
+    name:{fr:"Digital & Intelligence Artificielle",ar:"الرقمنة والذكاء الاصطناعي",en:"Digital & Artificial Intelligence"},
+    branches:{
+      1:[
+        branch(
+          "Développement Digital","التطوير الرقمي","Digital Development",
+          "HTML et CSS; JavaScript; Python; Bases de Données; Algorithmique"
+        )
       ],
-      2: [
-        {
-          name: { fr: "Intelligence Artificielle", ar: "الذكاء الاصطناعي", en: "Artificial Intelligence" },
-          modules: [
-            "Machine Learning",
-            "Deep Learning",
-            "Python pour l’IA",
-            "Data Science",
-            "Vision par Ordinateur"
-          ]
-        }
+      2:[
+        branch(
+          "Intelligence Artificielle","الذكاء الاصطناعي","Artificial Intelligence",
+          "Machine Learning; Deep Learning; Python pour l’IA; Data Science; Vision par Ordinateur"
+        )
       ]
     }
   }
 ];
 
-let currentLanguage = "fr";
+const branchIndex = new Map();
 
-function applyLanguage(lang) {
-  currentLanguage = lang;
-  const t = translations[lang];
-
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-
-  document.getElementById("loginTitle").textContent = t.loginTitle;
-  document.getElementById("loginSubtitle").textContent = t.loginSubtitle;
-  document.getElementById("email").placeholder = t.email;
-  document.getElementById("password").placeholder = t.password;
-  document.getElementById("siteTitle").textContent = t.loginTitle;
-  document.getElementById("logoutBtn").textContent = t.logout;
-  document.getElementById("sidebarTitle").textContent = t.sidebarPoles;
-  document.getElementById("mobileMenuTitle").textContent = t.sidebarPoles;
-  document.getElementById("modulesTitle").textContent = t.modules;
-  document.getElementById("modulesBackBtn").textContent = t.back;
-
-  document.querySelectorAll(".edit-btn").forEach(button => {
-    button.textContent = t.edit;
+poles.forEach(pole => {
+  [1,2].forEach(year => {
+    pole.branches[year].forEach((program,index) => {
+      program.id = `${pole.id}-${year}-${index}`;
+      branchIndex.set(program.id,{pole,year,program});
+    });
   });
+});
 
-  buildMenus();
+const staff = [
+  {fr:"Direction de la CMC",ar:"إدارة المدينة",en:"CMC management"},
+  {fr:"Chef du pôle Industrie",ar:"رئيس قطب الصناعة",en:"Head of Industry"},
+  {fr:"Chef du pôle Santé",ar:"رئيس قطب الصحة",en:"Head of Health"},
+  {fr:"Chef du pôle Gestion & Commerce",ar:"رئيس قطب التدبير والتجارة",en:"Head of Management & Commerce"},
+  {fr:"Chef du pôle Digital & IA",ar:"رئيس قطب الرقمنة",en:"Head of Digital & AI"},
+  {fr:"Responsable pédagogique",ar:"المسؤول التربوي",en:"Academic coordinator"}
+];
+
+/* LOCAL DATABASE
+   Keep the same database name to preserve previous demo profiles.
+   No passwords or authentication tokens are stored.
+*/
+let databasePromise;
+
+function openDatabase() {
+  if (!databasePromise) {
+    databasePromise = new Promise((resolve,reject) => {
+      const request = indexedDB.open("cmc-channel-prototype-v1",1);
+
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore("teachers",{keyPath:"id"});
+      };
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+      request.onblocked = () => reject(new Error("Database blocked"));
+    });
+  }
+  return databasePromise;
 }
 
-function buildMenus() {
-  const t = translations[currentLanguage];
+async function loadTeachers() {
+  const database = await openDatabase();
 
-  const desktop = document.getElementById("sidebarPoles");
-  const mobile = document.getElementById("mobilePoles");
+  return new Promise((resolve,reject) => {
+    const request = database
+      .transaction("teachers","readonly")
+      .objectStore("teachers")
+      .getAll();
 
-  desktop.innerHTML = "";
-  mobile.innerHTML = "";
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
 
-  poles.forEach(pole => {
-    const desktopHTML = `
-      <div class="pole-item">
-        <button class="pole-button" onclick="togglePole('desktop', '${pole.id}')">
-          ${pole[currentLanguage]}
-        </button>
+async function persistTeacher(teacher) {
+  const database = await openDatabase();
 
-        <div class="pole-content" id="desktop-content-${pole.id}">
-          <button class="year-btn" onclick="toggleBranches('desktop', '${pole.id}', 1)">
-            ${t.year1}
-          </button>
+  return new Promise((resolve,reject) => {
+    const transaction = database.transaction("teachers","readwrite");
+    transaction.objectStore("teachers").put(teacher);
 
-          <button class="year-btn" onclick="toggleBranches('desktop', '${pole.id}', 2)">
-            ${t.year2}
-          </button>
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error);
+  });
+}
 
-          <div class="branch-list" id="desktop-branches-${pole.id}-1"></div>
-          <div class="branch-list" id="desktop-branches-${pole.id}-2"></div>
-        </div>
-      </div>
+/* STATE */
+
+const $ = id => document.getElementById(id);
+
+let language = "fr";
+let selectedRole = "student";
+let session = null;
+let selection = null;
+let currentTeacherId = null;
+let currentTab = "pdfs";
+let currentView = "home";
+let expandedPole = null;
+let expandedYear = null;
+let editingResourceId = null;
+let statusTimer;
+
+const teachers = new Map();
+const phoneQuery = matchMedia("(max-width:900px)");
+const objectURLs = new Map();
+
+function blobURL(blob) {
+  if (!blob) return "";
+  if (!objectURLs.has(blob)) {
+    objectURLs.set(blob,URL.createObjectURL(blob));
+  }
+  return objectURLs.get(blob);
+}
+
+function releaseURLs() {
+  objectURLs.forEach(url => URL.revokeObjectURL(url));
+  objectURLs.clear();
+}
+
+function t(key) {
+  return translations[language][key] || key;
+}
+
+function el(tag,className,value) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (value !== undefined) node.textContent = value;
+  return node;
+}
+
+function notify(message) {
+  clearTimeout(statusTimer);
+  $("status").textContent = message;
+  $("status").hidden = false;
+  statusTimer = setTimeout(() => $("status").hidden = true,5000);
+}
+
+function safeURL(value) {
+  try {
+    const url = new URL(value);
+    return ["http:","https:"].includes(url.protocol) ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function teacherName(teacher) {
+  return teacher.name ||
+    `${t("teacherPlaceholder")} ${teacher.number || ""}`.trim();
+}
+
+function ownTeacher() {
+  return session?.role === "teacher"
+    ? teachers.get(session.teacherId)
+    : null;
+}
+
+function isOwner() {
+  return Boolean(
+    ownTeacher() &&
+    currentTeacherId === session.teacherId
+  );
+}
+
+function makeAvatar(blob,name,large=false) {
+  const box = el("div","avatar" + (large ? " channel-avatar" : ""));
+
+  function placeholder() {
+    box.innerHTML = `
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="21" r="12"></circle>
+        <path d="M10 60v-7c0-12 10-20 22-20s22 8 22 20v7z"></path>
+      </svg>
     `;
+  }
 
-    const mobileHTML = `
-      <div class="pole-item">
-        <button class="pole-button" onclick="togglePole('mobile', '${pole.id}')">
-          ${pole[currentLanguage]}
-        </button>
+  placeholder();
 
-        <div class="pole-content" id="mobile-content-${pole.id}">
-          <button class="year-btn" onclick="toggleBranches('mobile', '${pole.id}', 1)">
-            ${t.year1}
-          </button>
+  if (blob) {
+    const image = el("img");
+    image.src = blobURL(blob);
+    image.alt = name;
+    image.onerror = placeholder;
+    box.replaceChildren(image);
+  }
 
-          <button class="year-btn" onclick="toggleBranches('mobile', '${pole.id}', 2)">
-            ${t.year2}
-          </button>
-
-          <div class="branch-list" id="mobile-branches-${pole.id}-1"></div>
-          <div class="branch-list" id="mobile-branches-${pole.id}-2"></div>
-        </div>
-      </div>
-    `;
-
-    desktop.innerHTML += desktopHTML;
-    mobile.innerHTML += mobileHTML;
-  });
+  return box;
 }
 
-function togglePole(menu, poleId) {
-  const contents = document.querySelectorAll(".pole-content");
+/* Placeholder teacher profiles */
+branchIndex.forEach(({program}) => {
+  [1,2].forEach(number => {
+    const id = `placeholder-${program.id}-${number}`;
 
-  contents.forEach(content => {
-    if (content.id === menu + "-content-" + poleId) {
-      content.style.display = content.style.display === "block" ? "none" : "block";
-    } else if (content.id.startsWith(menu + "-")) {
-      content.style.display = "none";
-    }
+    teachers.set(id,{
+      id,
+      number,
+      name:"",
+      specialty:"",
+      bio:"",
+      branchIds:[program.id],
+      resources:[],
+      photo:null,
+      banner:null,
+      placeholder:true
+    });
   });
+});
+
+const ready = (async () => {
+  try {
+    const saved = await loadTeachers();
+
+    saved.forEach(teacher => {
+      if (
+        teacher &&
+        typeof teacher.id === "string" &&
+        Array.isArray(teacher.resources) &&
+        Array.isArray(teacher.branchIds)
+      ) {
+        teachers.set(teacher.id,teacher);
+      }
+    });
+  } catch {
+    /* Browsing works without persistent storage. */
+  }
+})();
+
+/* LANGUAGE */
+
+function setLanguage(value) {
+  language = translations[value] ? value : "fr";
+
+  document.documentElement.lang = language;
+  document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+
+  document.querySelectorAll("[data-i18n]").forEach(node => {
+    node.textContent = t(node.dataset.i18n);
+  });
+
+  document.querySelectorAll(".language-control").forEach(node => {
+    node.value = language;
+  });
+
+  $("loginRole").textContent =
+    t(selectedRole === "teacher" ? "teacher" : "student");
+
+  $("loginHeading").textContent =
+    t(selectedRole === "teacher" ? "teacherAccount" : "studentAccount");
+
+  if (session) {
+    $("headerRole").textContent =
+      t(session.role === "teacher" ? "teacherAccount" : "studentAccount");
+
+    renderAccount();
+    renderPeople();
+    buildMenu();
+
+    if (selection) renderModules();
+    if (currentTeacherId) renderChannel();
+  }
 }
 
-function toggleBranches(menu, poleId, year) {
-  const pole = poles.find(p => p.id === poleId);
-  const list = document.getElementById(menu + "-branches-" + poleId + "-" + year);
+/* ENTRY AND LOGIN */
 
-  document.querySelectorAll(".branch-list").forEach(item => {
-    if (
-      item.id.startsWith(menu + "-") &&
-      item.id !== menu + "-branches-" + poleId + "-" + year
-    ) {
-      item.style.display = "none";
-      item.innerHTML = "";
+function chooseRole(role) {
+  selectedRole = role;
+  $("entryPage").hidden = true;
+  $("loginPage").hidden = false;
+  $("loginForm").reset();
+
+  setLanguage(language);
+  $("loginEmail").focus();
+}
+
+function showEntry() {
+  $("loginPassword").value = "";
+  $("loginPage").hidden = true;
+  $("entryPage").hidden = false;
+}
+
+$("loginForm").addEventListener("submit",async event => {
+  event.preventDefault();
+  if (!$("loginForm").reportValidity()) return;
+
+  $("loginSubmit").disabled = true;
+
+  const email = $("loginEmail").value.trim().toLowerCase();
+  $("loginPassword").value = "";
+
+  try {
+    await ready;
+
+    if (selectedRole === "teacher") {
+      const id = "teacher:" + email;
+
+      if (!teachers.has(id)) {
+        const profile = {
+          id,
+          email,
+          name:email.split("@")[0],
+          specialty:"",
+          bio:"",
+          branchIds:[],
+          resources:[],
+          photo:null,
+          banner:null,
+          placeholder:false
+        };
+
+        try {
+          await persistTeacher(profile);
+        } catch {
+          notify(t("storageError"));
+        }
+
+        teachers.set(id,profile);
+      }
+
+      session = {role:"teacher",email,teacherId:id};
+    } else {
+      session = {role:"student",email};
     }
-  });
 
-  if (list.style.display === "block") {
-    list.style.display = "none";
-    list.innerHTML = "";
+    $("loginPage").hidden = true;
+    $("app").hidden = false;
+
+    setLanguage(language);
+    goHome();
+    closeMenu(false);
+  } finally {
+    $("loginSubmit").disabled = false;
+  }
+});
+
+function logout() {
+  closeAccount();
+  closeMenu(false);
+
+  document.querySelectorAll("dialog[open]").forEach(dialog => dialog.close());
+
+  session = null;
+  selection = null;
+  currentTeacherId = null;
+  expandedPole = null;
+  expandedYear = null;
+  currentView = "home";
+
+  $("app").hidden = true;
+  $("entryPage").hidden = false;
+  $("loginPassword").value = "";
+
+  releaseURLs();
+}
+
+/* ACCOUNT DROPDOWN */
+
+function closeAccount() {
+  $("accountMenu").hidden = true;
+  $("accountButton").setAttribute("aria-expanded","false");
+}
+
+function toggleAccount() {
+  const opening = $("accountMenu").hidden;
+  $("accountMenu").hidden = !opening;
+  $("accountButton").setAttribute("aria-expanded",String(opening));
+}
+
+function renderAccount() {
+  if (!session) return;
+
+  const teacher = ownTeacher();
+  const name = teacher
+    ? teacherName(teacher)
+    : session.email.split("@")[0];
+
+  $("accountButton").replaceChildren(makeAvatar(teacher?.photo,name));
+
+  $("accountSummary").replaceChildren(
+    makeAvatar(teacher?.photo,name),
+    el("h3","",name),
+    el("p","",session.email),
+    el("p","",t(session.role === "teacher" ? "teacherAccount" : "studentAccount"))
+  );
+
+  $("teacherAccountActions").hidden = session.role !== "teacher";
+}
+
+document.addEventListener("click",event => {
+  if (!$("accountWrap").contains(event.target)) closeAccount();
+});
+
+function openSettings() {
+  if (!session) return;
+
+  closeAccount();
+
+  $("settingsAccount").textContent =
+    session.email + " — " +
+    t(session.role === "teacher" ? "teacherAccount" : "studentAccount");
+
+  $("settingsDialog").showModal();
+}
+
+/* LEFT PANEL VISIBILITY
+   Home = responsables.
+   Modules = branch teachers.
+   Channel = no left panel.
+*/
+function renderPeople() {
+  const panel = $("peoplePanel");
+  const list = $("peopleList");
+  const isChannel = currentView === "channel";
+
+  panel.hidden = isChannel;
+  $("dashboard").classList.toggle("channel-layout",isChannel);
+
+  list.replaceChildren();
+
+  if (isChannel) return;
+
+  if (currentView === "home") {
+    $("peopleHeading").textContent = t("staff");
+
+    staff.forEach(role => {
+      const card = el("article","person-card");
+
+      card.append(
+        makeAvatar(null,t("unnamed")),
+        el("span","person-name",t("unnamed")),
+        el("span","person-role",role[language])
+      );
+
+      list.appendChild(card);
+    });
+
     return;
   }
 
-  list.innerHTML = "";
+  $("peopleHeading").textContent = t("teachers");
+  if (!selection) return;
 
-  pole.branches[year].forEach(branch => {
-    const button = document.createElement("button");
-    button.className = "branch-btn";
-    button.textContent = branch.name[currentLanguage];
-    button.onclick = function () {
-      closeMenu();
-      openModulesPage(branch);
-    };
+  const realTeachers = [...teachers.values()].filter(teacher =>
+    !teacher.placeholder &&
+    teacher.branchIds.includes(selection.program.id)
+  );
 
-    list.appendChild(button);
+  const people = realTeachers.length
+    ? realTeachers
+    : [...teachers.values()].filter(teacher =>
+        teacher.placeholder &&
+        teacher.branchIds.includes(selection.program.id)
+      );
+
+  people.forEach(teacher => {
+    const card = el("button","person-card");
+    card.type = "button";
+
+    card.append(
+      makeAvatar(teacher.photo,teacherName(teacher)),
+      el("span","person-name",teacherName(teacher)),
+      el(
+        "span",
+        "person-role",
+        teacher.specialty || selection.program.name[language]
+      )
+    );
+
+    card.onclick = () => openChannel(teacher.id);
+    list.appendChild(card);
   });
-
-  list.style.display = "block";
 }
 
-function openModulesPage(branch) {
-  document.getElementById("modulesTitle").textContent =
-    branch.name[currentLanguage] + " - " + translations[currentLanguage].modules;
+/* POLES AND BRANCHES */
 
-  const grid = document.getElementById("modulesGrid");
-  grid.innerHTML = "";
+function buildMenu() {
+  const container = $("poleMenu");
+  const focused = container.contains(document.activeElement)
+    ? document.activeElement.id
+    : null;
 
-  branch.modules.forEach(moduleName => {
-    const button = document.createElement("button");
-    button.className = "module-icon";
-    button.textContent = moduleName;
-    button.onclick = function () {
-      alert("Page du module : " + moduleName);
+  const scroll = $("poleSidebar").scrollTop;
+  container.replaceChildren();
+
+  poles.forEach(pole => {
+    const item = el("div","pole-item");
+    const button = el("button","pole-button");
+
+    button.type = "button";
+    button.id = "pole-button-" + pole.id;
+
+    const content = el("div","pole-content");
+    content.id = "pole-content-" + pole.id;
+
+    const open = expandedPole === pole.id;
+    content.hidden = !open;
+
+    button.setAttribute("aria-expanded",String(open));
+    button.setAttribute("aria-controls",content.id);
+
+    const symbol = el("span","pole-symbol",pole.icon);
+    symbol.setAttribute("aria-hidden","true");
+
+    const arrow = el("span","pole-arrow",open ? "−" : "+");
+    arrow.setAttribute("aria-hidden","true");
+
+    button.append(
+      symbol,
+      el("span","pole-label",pole.name[language]),
+      arrow
+    );
+
+    [1,2].forEach(year => {
+      const group = el("div","year-group");
+      const yearButton = el("button","year-button");
+
+      yearButton.type = "button";
+      yearButton.id = `${pole.id}-year-${year}`;
+
+      const yearOpen = open && expandedYear === year;
+      yearButton.textContent = (yearOpen ? "▾ " : "▸ ") + t("year" + year);
+      yearButton.setAttribute("aria-expanded",String(yearOpen));
+
+      const list = el("div","branch-list");
+      list.id = `${pole.id}-branches-${year}`;
+      list.hidden = !yearOpen;
+
+      yearButton.setAttribute("aria-controls",list.id);
+
+      pole.branches[year].forEach(program => {
+        const branchButton = el("button","branch-button",program.name[language]);
+        branchButton.type = "button";
+        branchButton.id = "branch-" + program.id;
+
+        const selected = selection?.program.id === program.id;
+        branchButton.classList.toggle("selected",selected);
+
+        if (selected) branchButton.setAttribute("aria-current","true");
+
+        branchButton.onclick = () => {
+          expandedPole = pole.id;
+          expandedYear = year;
+          selectBranch(pole,year,program);
+
+          if (phoneQuery.matches) {
+            closeMenu(false);
+            revealCenter("modulesTitle");
+          }
+        };
+
+        list.appendChild(branchButton);
+      });
+
+      yearButton.onclick = () => {
+        const already = expandedPole === pole.id && expandedYear === year;
+
+        expandedPole = pole.id;
+        expandedYear = already ? null : year;
+
+        if (!already && pole.branches[year].length) {
+          selectBranch(pole,year,pole.branches[year][0]);
+        } else {
+          buildMenu();
+        }
+      };
+
+      group.append(yearButton,list);
+      content.appendChild(group);
+    });
+
+    button.onclick = () => {
+      expandedPole = expandedPole === pole.id ? null : pole.id;
+      expandedYear = null;
+      buildMenu();
     };
 
-    grid.appendChild(button);
+    item.append(button,content);
+    container.appendChild(item);
   });
 
-  showPage("modulesPage");
+  $("poleSidebar").scrollTop = scroll;
+
+  if (focused) {
+    const replacement = $(focused);
+    if (replacement?.getClientRects().length) {
+      replacement.focus({preventScroll:true});
+    }
+  }
 }
 
-function showPage(pageId) {
-  document.querySelectorAll(".page").forEach(page => {
-    page.style.display = "none";
-  });
+/* CENTER VIEWS */
 
-  document.getElementById(pageId).style.display = "block";
-  window.scrollTo(0, 0);
+function showView(view) {
+  currentView = view;
+
+  $("homeView").hidden = view !== "home";
+  $("modulesView").hidden = view !== "modules";
+  $("channelView").hidden = view !== "channel";
+
+  $("workspace").scrollTop = 0;
+
+  /* Keep left-panel visibility synchronized on every navigation. */
+  renderPeople();
+}
+
+function revealCenter(id) {
+  $(id).focus({preventScroll:true});
+
+  if (phoneQuery.matches) {
+    $("workspace").scrollIntoView({block:"start"});
+  }
 }
 
 function goHome() {
-  showPage("homePage");
+  if (!session) return;
+
+  closeAccount();
+  closeMenu(false);
+
+  selection = null;
+  currentTeacherId = null;
+  expandedPole = null;
+  expandedYear = null;
+
+  showView("home");
+  buildMenu();
 }
 
-function openMenu() {
-  document.getElementById("mobileMenu").classList.add("open");
-  document.getElementById("menuOverlay").style.display = "block";
+function selectBranch(pole,year,program) {
+  selection = {pole,year,program};
+  currentTeacherId = null;
+
+  renderModules();
+  showView("modules");
+  buildMenu();
 }
 
-function closeMenu() {
-  document.getElementById("mobileMenu").classList.remove("open");
-  document.getElementById("menuOverlay").style.display = "none";
+function renderModules() {
+  if (!selection) return;
+
+  const {pole,year,program} = selection;
+
+  $("modulesTitle").textContent =
+    program.name[language] + " — " + t("modules");
+
+  $("modulesBreadcrumb").textContent =
+    pole.name[language] + " / " + t("year" + year);
+
+  const grid = $("modulesGrid");
+  grid.replaceChildren();
+
+  program.modules.forEach(name => {
+    const button = el("button","module-card");
+    button.type = "button";
+
+    button.append(
+      el("span","module-icon","📘"),
+      el("span","",name)
+    );
+
+    button.onclick = () => notify(t("moduleNotice") + " " + name);
+    grid.appendChild(button);
+  });
 }
 
-function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const error = document.getElementById("loginError");
+function leaveChannel() {
+  currentTeacherId = null;
 
-  if (!email || !password) {
-    error.textContent = translations[currentLanguage].error;
-    error.style.display = "block";
+  if (selection) {
+    showView("modules");
+    revealCenter("modulesTitle");
+  } else {
+    goHome();
+  }
+}
+
+/* LOCAL FOLLOW DEMO */
+
+let followMap = {};
+
+try {
+  const stored = JSON.parse(
+    localStorage.getItem("cmc-prototype-follows") || "{}"
+  );
+
+  if (stored && typeof stored === "object" && !Array.isArray(stored)) {
+    followMap = stored;
+  }
+} catch {}
+
+function followKey() {
+  return session ? session.role + ":" + session.email : "";
+}
+
+function isFollowing(id) {
+  return Array.isArray(followMap[followKey()]) &&
+    followMap[followKey()].includes(id);
+}
+
+function localFollowerCount(id) {
+  return Object.values(followMap).filter(list =>
+    Array.isArray(list) && list.includes(id)
+  ).length;
+}
+
+function toggleFollow() {
+  if (!session || !currentTeacherId || isOwner()) return;
+
+  const key = followKey();
+  const list = new Set(
+    Array.isArray(followMap[key]) ? followMap[key] : []
+  );
+
+  if (list.has(currentTeacherId)) list.delete(currentTeacherId);
+  else list.add(currentTeacherId);
+
+  followMap[key] = [...list];
+
+  try {
+    localStorage.setItem("cmc-prototype-follows",JSON.stringify(followMap));
+  } catch {}
+
+  updateCounts();
+}
+
+/* CHANNEL DISPLAY */
+
+function openOwnChannel() {
+  if (!ownTeacher()) return;
+
+  closeAccount();
+  openChannel(session.teacherId);
+}
+
+function openChannel(id) {
+  if (!teachers.has(id)) return;
+
+  currentTeacherId = id;
+  currentTab = "pdfs";
+
+  renderChannel();
+
+  /* This hides the left panel and expands the channel area. */
+  showView("channel");
+
+  revealCenter("channelName");
+}
+
+function renderChannel() {
+  const teacher = teachers.get(currentTeacherId);
+  if (!teacher) return;
+
+  const banner = $("channelBanner");
+  banner.replaceChildren();
+
+  if (teacher.banner) {
+    const image = el("img");
+    image.src = blobURL(teacher.banner);
+    image.alt = "";
+    image.onerror = () => image.remove();
+    banner.appendChild(image);
+  }
+
+  $("channelAvatar").replaceChildren(
+    makeAvatar(teacher.photo,teacherName(teacher),true)
+  );
+
+  $("channelName").textContent = teacherName(teacher);
+
+  const branches = teacher.branchIds
+    .map(id => branchIndex.get(id)?.program.name[language])
+    .filter(Boolean);
+
+  $("channelSpecialty").textContent =
+    teacher.specialty || branches.join(" • ");
+
+  $("channelBio").textContent = teacher.bio || t("bioPlaceholder");
+
+  $("ownerTools").hidden = !isOwner();
+  $("followButton").hidden = isOwner();
+
+  updateCounts();
+  selectTab(currentTab);
+}
+
+function updateCounts() {
+  const teacher = teachers.get(currentTeacherId);
+  if (!teacher) return;
+
+  $("followerCount").textContent =
+    localFollowerCount(teacher.id) + " " + t("followers");
+
+  $("videoCount").textContent =
+    teacher.resources.filter(resource =>
+      resource.kind === "videos"
+    ).length + " " + t("videos");
+
+  const following = isFollowing(teacher.id);
+
+  $("followButton").textContent = t(following ? "following" : "follow");
+  $("followButton").classList.toggle("following",following);
+  $("followButton").setAttribute("aria-pressed",String(following));
+}
+
+function selectTab(kind) {
+  currentTab = ["pdfs","exercises","videos"].includes(kind)
+    ? kind
+    : "pdfs";
+
+  ["pdfs","exercises","videos"].forEach(key => {
+    const active = key === currentTab;
+    const button = $("tab-" + key);
+
+    button.setAttribute("aria-selected",String(active));
+    button.tabIndex = active ? 0 : -1;
+  });
+
+  const panel = $("resourcePanel");
+  panel.setAttribute("aria-labelledby","tab-" + currentTab);
+  panel.replaceChildren();
+
+  const teacher = teachers.get(currentTeacherId);
+  if (!teacher) return;
+
+  const resources = teacher.resources.filter(resource =>
+    currentTab === "exercises"
+      ? ["exercises","exams"].includes(resource.kind)
+      : resource.kind === currentTab
+  );
+
+  if (!resources.length) {
+    panel.appendChild(el("div","empty-state",t("empty")));
     return;
   }
 
-  document.getElementById("loginPage").style.display = "none";
-  showPage("homePage");
+  const grid = el("div","resource-grid");
 
-  applyLanguage(document.getElementById("loginLanguage").value);
+  resources.forEach(resource => {
+    const card = el("article","resource-card");
+
+    const icon = resource.kind === "videos" ? "▶"
+      : resource.kind === "exams" ? "📝"
+      : resource.kind === "exercises" ? "✍"
+      : "📄";
+
+    card.append(
+      el("span","resource-icon",icon),
+      el("h3","",resource.title)
+    );
+
+    if (resource.kind === "exams") {
+      card.appendChild(el("p","muted small",t("exams")));
+    }
+
+    if (resource.description) {
+      card.appendChild(el("p","muted small",resource.description));
+    }
+
+    const href = resource.file
+      ? blobURL(resource.file)
+      : safeURL(resource.url);
+
+    if (href) {
+      const link = el("a","",t("open") + " ↗");
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      card.appendChild(link);
+    }
+
+    if (isOwner()) {
+      const actions = el("div","actions");
+
+      const edit = el("button","secondary",t("edit"));
+      edit.type = "button";
+      edit.onclick = () => openResourceEditor(resource.id);
+
+      const remove = el("button","danger",t("delete"));
+      remove.type = "button";
+      remove.onclick = () => deleteResource(resource.id);
+
+      actions.append(edit,remove);
+      card.appendChild(actions);
+    }
+
+    grid.appendChild(card);
+  });
+
+  panel.appendChild(grid);
 }
 
-function logout() {
-  showPage("loginPage");
+/* PROFILE EDITOR */
+
+function openProfileEditor() {
+  const teacher = ownTeacher();
+  if (!teacher) return;
+
+  closeAccount();
+  $("profileForm").reset();
+
+  $("profileName").value = teacher.name;
+  $("profileSpecialty").value = teacher.specialty;
+  $("profileBio").value = teacher.bio;
+
+  const options = $("profileBranches");
+  options.replaceChildren();
+
+  branchIndex.forEach(({pole,year,program},id) => {
+    const option = el(
+      "option","",
+      pole.name[language] + " / " +
+      t("year" + year) + " / " +
+      program.name[language]
+    );
+
+    option.value = id;
+    option.selected = teacher.branchIds.includes(id);
+    options.appendChild(option);
+  });
+
+  $("profileDialog").showModal();
 }
 
-function changeLanguage(lang) {
-  applyLanguage(lang);
+$("profileForm").addEventListener("submit",async event => {
+  event.preventDefault();
+
+  const teacher = ownTeacher();
+  if (!teacher) return;
+
+  const photo = $("profilePhoto").files[0];
+  const banner = $("profileBanner").files[0];
+
+  for (const image of [photo,banner]) {
+    if (!image) continue;
+
+    if (!image.type.startsWith("image/")) {
+      notify(t("imageError"));
+      return;
+    }
+
+    if (image.size > 5 * 1024 * 1024) {
+      notify(t("sizeError"));
+      return;
+    }
+  }
+
+  const updated = {
+    ...teacher,
+    name:$("profileName").value.trim(),
+    specialty:$("profileSpecialty").value.trim(),
+    bio:$("profileBio").value.trim(),
+    branchIds:[...$("profileBranches").selectedOptions]
+      .map(option => option.value),
+    photo:photo || teacher.photo,
+    banner:banner || teacher.banner
+  };
+
+  if (!updated.name) return;
+
+  const submit = event.submitter ||
+    $("profileForm").querySelector('[type="submit"]');
+
+  submit.disabled = true;
+
+  try {
+    await persistTeacher(updated);
+    teachers.set(updated.id,updated);
+
+    $("profileDialog").close();
+
+    renderAccount();
+    renderPeople();
+
+    if (currentTeacherId === updated.id) renderChannel();
+
+    notify(t("saved"));
+  } catch {
+    notify(t("storageError"));
+  } finally {
+    submit.disabled = false;
+  }
+});
+
+/* RESOURCE EDITOR */
+
+function updateFileAccept() {
+  $("resourceFile").accept =
+    $("resourceKind").value === "videos"
+      ? "video/*"
+      : "application/pdf,.pdf";
 }
 
-function editBigScreen() {
-  const newTitle = prompt("Titre principal :", document.getElementById("bigTitle").textContent);
-  const newText = prompt("Texte principal :", document.getElementById("bigText").textContent);
+$("resourceKind").addEventListener("change",updateFileAccept);
 
-  if (newTitle !== null) document.getElementById("bigTitle").textContent = newTitle;
-  if (newText !== null) document.getElementById("bigText").textContent = newText;
+function openResourceEditor(resourceId=null) {
+  const teacher = ownTeacher();
+  if (!teacher) return;
+
+  closeAccount();
+
+  const resource = resourceId
+    ? teacher.resources.find(item => item.id === resourceId)
+    : null;
+
+  if (resourceId && !resource) return;
+
+  editingResourceId = resource?.id || null;
+  $("resourceForm").reset();
+
+  if (resource) {
+    $("resourceTitle").value = resource.title;
+    $("resourceKind").value = resource.kind;
+    $("resourceDescription").value = resource.description || "";
+    $("resourceURL").value = resource.url || "";
+  }
+
+  $("existingFileNote").textContent = resource?.file
+    ? t("existingFile") + (resource.fileName || resource.file.name || "")
+    : "";
+
+  updateFileAccept();
+  $("resourceDialog").showModal();
 }
 
-function editSmallScreen(number) {
-  const newTitle = prompt("Titre :", document.getElementById("smallTitle" + number).textContent);
-  const newText = prompt("Texte :", document.getElementById("smallText" + number).textContent);
+$("resourceForm").addEventListener("submit",async event => {
+  event.preventDefault();
 
-  if (newTitle !== null) document.getElementById("smallTitle" + number).textContent = newTitle;
-  if (newText !== null) document.getElementById("smallText" + number).textContent = newText;
+  const teacher = ownTeacher();
+  if (!teacher) return;
+
+  const old = teacher.resources.find(item =>
+    item.id === editingResourceId
+  );
+
+  const file = $("resourceFile").files[0];
+  const enteredURL = $("resourceURL").value.trim();
+  const kind = $("resourceKind").value;
+  const title = $("resourceTitle").value.trim();
+
+  if (!title) return;
+
+  if (file && enteredURL) {
+    notify(t("sourceError"));
+    return;
+  }
+
+  const resourceFile =
+    file || (!enteredURL ? old?.file : null) || null;
+
+  const url = enteredURL ? safeURL(enteredURL) : "";
+
+  if (enteredURL && !url) {
+    notify(t("invalidURL"));
+    return;
+  }
+
+  if (!url && !resourceFile) {
+    notify(t("sourceError"));
+    return;
+  }
+
+  if (resourceFile) {
+    if (resourceFile.size > 50 * 1024 * 1024) {
+      notify(t("sizeError"));
+      return;
+    }
+
+    const fileName = resourceFile.name || old?.fileName || "";
+
+    const valid = kind === "videos"
+      ? resourceFile.type.startsWith("video/")
+      : (
+          resourceFile.type === "application/pdf" ||
+          /\.pdf$/i.test(fileName)
+        );
+
+    if (!valid) {
+      notify(t("typeError"));
+      return;
+    }
+  }
+
+  const resource = {
+    id:old?.id ||
+      ("resource-" + Date.now() + "-" +
+        Math.random().toString(36).slice(2)),
+    kind,
+    title,
+    description:$("resourceDescription").value.trim(),
+    url:url || "",
+    file:resourceFile,
+    fileName:resourceFile
+      ? (file?.name || old?.fileName || "")
+      : ""
+  };
+
+  const updated = {
+    ...teacher,
+    resources:old
+      ? teacher.resources.map(item =>
+          item.id === old.id ? resource : item
+        )
+      : [...teacher.resources,resource]
+  };
+
+  const submit = event.submitter ||
+    $("resourceForm").querySelector('[type="submit"]');
+
+  submit.disabled = true;
+
+  try {
+    await persistTeacher(updated);
+    teachers.set(updated.id,updated);
+    $("resourceDialog").close();
+
+    if (currentTeacherId !== updated.id) openChannel(updated.id);
+
+    currentTab = kind === "exams" ? "exercises" : kind;
+
+    renderChannel();
+    notify(t("saved"));
+  } catch {
+    notify(t("storageError"));
+  } finally {
+    submit.disabled = false;
+  }
+});
+
+async function deleteResource(id) {
+  const teacher = ownTeacher();
+
+  if (
+    !teacher ||
+    !isOwner() ||
+    !teacher.resources.some(item => item.id === id)
+  ) return;
+
+  if (!confirm(t("deleteConfirm"))) return;
+
+  const updated = {
+    ...teacher,
+    resources:teacher.resources.filter(item => item.id !== id)
+  };
+
+  try {
+    await persistTeacher(updated);
+    teachers.set(updated.id,updated);
+    renderChannel();
+    notify(t("deleted"));
+  } catch {
+    notify(t("storageError"));
+  }
 }
+
+/* MOBILE DRAWER */
+
+function openMenu() {
+  if (!session || !phoneQuery.matches) return;
+
+  closeAccount();
+
+  $("poleSidebar").inert = false;
+  $("poleSidebar").classList.add("open");
+  $("menuOverlay").hidden = false;
+  $("menuButton").setAttribute("aria-expanded","true");
+
+  document.body.classList.add("menu-open");
+  $("closeMenuButton").focus();
+}
+
+function closeMenu(restoreFocus=true) {
+  const wasOpen = $("poleSidebar").classList.contains("open");
+
+  $("poleSidebar").classList.remove("open");
+  $("menuOverlay").hidden = true;
+  $("menuButton").setAttribute("aria-expanded","false");
+
+  document.body.classList.remove("menu-open");
+
+  if (wasOpen && restoreFocus) $("menuButton").focus();
+
+  $("poleSidebar").inert = phoneQuery.matches;
+}
+
+phoneQuery.addEventListener("change",() => closeMenu(false));
+
+document.addEventListener("keydown",event => {
+  if (event.key === "Escape") {
+    closeAccount();
+
+    if ($("poleSidebar").classList.contains("open")) closeMenu();
+  }
+
+  if (
+    event.key === "Tab" &&
+    $("poleSidebar").classList.contains("open")
+  ) {
+    const items = [...$("poleSidebar").querySelectorAll("button")]
+      .filter(node => node.getClientRects().length);
+
+    const first = items[0];
+    const last = items[items.length - 1];
+
+    if (!first) return;
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+});
+
+/* CHANNEL TAB KEYBOARD NAVIGATION */
+
+document.querySelector(".channel-tabs")
+  .addEventListener("keydown",event => {
+    const keys = ["pdfs","exercises","videos"];
+    let index = keys.indexOf(currentTab);
+
+    if (event.key === "ArrowRight") {
+      index = (index + (language === "ar" ? 2 : 1)) % 3;
+    } else if (event.key === "ArrowLeft") {
+      index = (index + (language === "ar" ? 1 : 2)) % 3;
+    } else if (event.key === "Home") {
+      index = 0;
+    } else if (event.key === "End") {
+      index = 2;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    selectTab(keys[index]);
+    $("tab-" + keys[index]).focus();
+  });
+
+document.querySelectorAll(".language-control").forEach(control => {
+  control.addEventListener("change",event => {
+    setLanguage(event.target.value);
+  });
+});
+
+/* INITIALIZE */
+
+setLanguage("fr");
+closeMenu(false);
 </script>
 
 </body>
